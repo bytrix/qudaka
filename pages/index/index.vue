@@ -8,11 +8,11 @@
 </template>
 
 <script>
-	import UniHeader from '../../components/uni-header.vue'
+	// import UniHeader from '../../components/uni-header.vue'
 	import FlexScrollView from '../../components/flex-scroll-view/flex-scroll-view.vue'
 	export default {
 		components: {
-			UniHeader,
+			// UniHeader,
 			FlexScrollView
 		},
 		data() {

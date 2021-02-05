@@ -13,13 +13,13 @@
 </template>
 
 <script>
-	import UniHeader from '../../components/uni-header.vue'
+	// import UniHeader from '../../components/uni-header.vue'
 	import ImageUploader from '../../components/image-uploader/image-uploader.vue'
 	import dayjs from 'dayjs'
 	import model from '../../sqlite_db/model/index.js'
 	export default {
 		components: {
-			UniHeader,
+			// UniHeader,
 			ImageUploader
 		},
 		data() {
@@ -50,7 +50,8 @@
 							images: this.imageList,
 							user: {
 								username: u.username,
-								avatar: u.avatar
+								avatar: u.avatar,
+								unionid: u.unionid
 							},
 							goal: {
 								goal_name: this.goal.name,

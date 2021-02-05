@@ -36,11 +36,11 @@
 </template>
 
 <script>
-	import UniHeader from '../../components/uni-header.vue'
+	// import UniHeader from '../../components/uni-header.vue'
 	import dayjs from 'dayjs'
 	export default {
 		components:{
-			UniHeader
+			// UniHeader
 		},
 		onReady() {
 			const that = this

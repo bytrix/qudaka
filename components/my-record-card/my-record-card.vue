@@ -1,21 +1,17 @@
 <template>
 	<view class="record__card">
 		<view class="record__header">
-			<image class="record__header__userAvatar" :src="record.user.avatar"></image>
 			<view class="record__header__user">
-				<view class="record__header__username">{{record.user.username}}</view>
-				<view class="record__header__goalTrackerText">
-					{{record.goal.goal_name}}，已坚持{{record.goal.times}}天
+				<view class="record__header__goalName">
+					{{record.goal.goal_name}}
 				</view>
-			</view>
-			<view>
-				<view class="record__header__followBtn">监督TA</view>
 			</view>
 		</view>
 		<view class="record__text">{{record.text}}</view>
 		<view class="record__imageGroup">
 			<image mode="aspectFill" v-for="image in cut3images(record.images)" class="image" :src="image"></image>
 		</view>
+		<view class="record_time">{{record.create_time}}</view>
 	</view>
 </template>
 
@@ -41,7 +37,8 @@
 <style lang="scss">
 	.record__card {
 		width: 100%;
-		margin: 15px 0px;
+		// margin: 15px 0px;
+		margin-bottom: 15px;
 		padding: 25px 15px;
 		box-sizing: border-box;
 		background-color: #FFFFFF;
@@ -53,8 +50,15 @@
 	.record__header__user {
 		flex: 1
 	}
-	.record__header__username {
-		font-size: 0.9em;
+	.record__header__goalName {
+		font-size: 0.7em;
+		color: $uni-color-primary;
+		background-color: rgba($uni-color-primary, 0.15);
+		display: inline-block;
+		padding: 0px 8px;
+		height: 22px;
+		line-height: 22px;
+		border-radius: 14px;
 	}
 	.record__header__userAvatar {
 		width: 40px;
@@ -85,5 +89,10 @@
 		color: rgba(0,0,0,0.3);
 		font-size: 0.8em;
 		margin-top: 0.15em;
+	}
+	.record_time {
+		font-size: 0.8em;
+		color: rgba(0,0,0,0.2);
+		margin-top: 12px;
 	}
 </style>

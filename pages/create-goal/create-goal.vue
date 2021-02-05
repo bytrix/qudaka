@@ -25,10 +25,10 @@
 
 <script>
 	import dayjs from 'dayjs'
-	import UniHeader from '../../components/uni-header.vue'
+	// import UniHeader from '../../components/uni-header.vue'
 	export default {
 		components: {
-			UniHeader
+			// UniHeader
 		},
 		computed: {
 			isDisabled() {

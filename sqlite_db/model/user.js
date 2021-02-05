@@ -14,6 +14,7 @@ import { db_name } from '../config.js'
 db.table = 'user'
 
 export default {
+	// 将登陆用户存储到数据库
 	save({ username, avatar, unionid }) {
 		db.open()
 		.then(() => {
@@ -43,6 +44,7 @@ export default {
 			})
 		})
 	},
+	// 从数据库中获取当前登陆用户
 	get() {
 		return new Promise((resolve, reject) => {
 			return db.open()
@@ -51,7 +53,6 @@ export default {
 			})
 			.then(res => {
 				if(res.length === 1) {
-					// return res[0]
 					resolve(res[0])
 				} else {
 					console.log('用户未登陆')
