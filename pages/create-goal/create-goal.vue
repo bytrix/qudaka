@@ -65,8 +65,8 @@
 						goal_name,
 						start_time,
 						end_time,
-						period,
-						frequency: parseInt(frequency)
+						timestamp: new Date().getTime(),
+						times: 0
 					}
 				}).then(res => {
 					const pages = getCurrentPages()
@@ -101,7 +101,7 @@
 
 <style lang="scss">
 	page {
-		padding: 12px;
+		padding: $page-padding;
 	}
 	label > view {
 		margin-bottom: 12px;

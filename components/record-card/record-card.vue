@@ -3,14 +3,17 @@
 		<view class="record__header">
 			<image class="record__header__userAvatar" :src="record.user.avatar"></image>
 			<view class="record__header__user">
-				{{record.user.username}}
+				<view>{{record.user.username}}</view>
+				<view class="record__header__goalTrackerText">
+					{{record.goal.goal_name}}，已坚持{{record.goal.times}}天
+				</view>
 			</view>
 			<view>
 				<view class="record__header__followBtn">监督TA</view>
 			</view>
 		</view>
 		<view class="record__text">{{record.text}}</view>
-		<image v-for="image in record.images" class="image" :src="image"></image>
+		<image mode="aspectFill" v-for="image in record.images" class="image" :src="image"></image>
 	</view>
 </template>
 
@@ -28,7 +31,7 @@
 <style lang="scss">
 	.record__card {
 		width: 100%;
-		margin: 5px;
+		margin: 15px 0px;
 		padding: 15px;
 		box-sizing: border-box;
 		background-color: #FFFFFF;
@@ -61,5 +64,9 @@
 		height: 100px;
 		margin-right: 8px;
 		border-radius: 3px;
+	}
+	.record__header__goalTrackerText {
+		color: rgba(0,0,0,0.3);
+		font-size: 0.9em;
 	}
 </style>

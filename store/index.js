@@ -5,7 +5,11 @@ const store = new Vuex.Store({
 	actions:{},
 	mutations:{},
 	state:{
-		scrollHeight: 0
+		scrollHeight: 0,
+		user: {
+			username: '',
+			avatar: ''
+		}
 	}
 })
 export default store

@@ -17,15 +17,16 @@
 		},
 		data() {
 			return {
-				title: 'Hello',
 				records: []
 			}
 		},
 		onLoad() {
+			uni.showLoading()
 			uniCloud.callFunction({
 				name: 'get_records'
 			}).then(({ result }) => {
 				this.records = result.data
+				uni.hideLoading()
 			})
 		},
 		methods: {

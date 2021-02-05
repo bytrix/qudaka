@@ -1,13 +1,13 @@
 <template>
 	<view>
 		<form @submit="addRecord">
-			<uni-header showBackIcon leftIcon='plus'>打卡</uni-header>
+			<uni-header showBackIcon leftIcon='plus'>{{goal.name}}</uni-header>
 			<image-uploader
 				:imageList="imageList"
 				@onImageUpload="onImageUpload"
 			/>
-			<textarea name='text' placeholder="写下你的打卡宣言"></textarea>
-			<button type="primary" form-type="submit">打卡</button>
+			<textarea name='text' class="textarea" placeholder="写下你的打卡宣言"></textarea>
+			<button type="primary" class="submitBtn" form-type="submit">打卡</button>
 		</form>
 	</view>
 </template>
@@ -15,6 +15,8 @@
 <script>
 	import UniHeader from '../../components/uni-header.vue'
 	import ImageUploader from '../../components/image-uploader/image-uploader.vue'
+	import dayjs from 'dayjs'
+	import model from '../../sqlite_db/model/index.js'
 	export default {
 		components: {
 			UniHeader,
@@ -22,39 +24,69 @@
 		},
 		data() {
 			return {
-				imageList: [
-					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-925b53fb-a580-41ad-9002-f322bf4f2d17/6f9a9dfb-2f8e-4286-9df3-09fe16debed7.jpeg',
-					'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-925b53fb-a580-41ad-9002-f322bf4f2d17/dd435e15-470c-4952-b45a-f2a1abb7d6b7.jpeg'
-				]
+				imageList: [],
+				goal: {
+					id: '',
+					name: '',
+					times: 0
+				}
 			}
 		},
-		onLoad() {
-			uniCloud.getTempFileURL({
-				fileList:[
-					'a435743a-a609-4555-9f4a-22feb3abebfe'
-				]
-			}).then(res => {
-				console.log(res)
-			})
+		onLoad(p) {
+			this.goal = {
+				id: p.goal_id,
+				name: p.goal_name,
+				times: parseInt(p.goal_times)
+			}
 		},
 		methods: {
 			addRecord(formData) {
-				console.log('发布', this.imageList, formData)
-				const self = this
-				uniCloud.callFunction({
-					name: 'add_record',
-					data:{
-						images: this.imageList,
-						user: {
-							// username: 'tom',
-							// avatar: ''
-							username: self.$user.username,
-							avatar: self.$user.avatar
-						},
-						text: formData.detail.value.text
-					}
-				}).then(res => {
-					console.log('发布成功', res)
+				uni.showLoading()
+				model.user.get()
+				.then(u => {
+					return uniCloud.callFunction({
+						name: 'add_record',
+						data:{
+							images: this.imageList,
+							user: {
+								username: u.username,
+								avatar: u.avatar
+							},
+							goal: {
+								goal_name: this.goal.name,
+								times: this.goal.times + 1
+							},
+							text: formData.detail.value.text,
+							create_time: dayjs().format('YYYY-MM-DD HH:mm:ss')
+						}
+					})
+				})
+				// .catch(e => {
+				// 	console.log('错误', e)
+				// 	uni.showToast({
+				// 		title: e
+				// 	})
+				// })
+				.then(() => {
+					console.log('update_goal....', this.goal)
+					return uniCloud.callFunction({
+						name: 'update_goal',
+						data: {
+							goal_id: this.goal.id,
+							times: this.goal.times + 1
+						}
+					})
+				})
+				.then(() => {
+					return uni.reLaunch({
+						url: '../goal-list/goal-list'
+					})
+				})
+				.then(() => {
+					uni.hideLoading()
+					uni.showToast({
+						title: '打卡成功'
+					})
 				})
 			},
 			onImageUpload(imageUrl) {
@@ -64,5 +96,15 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
+	page {
+		padding: $page-padding;
+	}
+	.submitBtn {
+		margin-top: $uni-spacing-col-base;
+	}
+	.textarea {
+		margin-top: $uni-spacing-col-base;
+		padding: $page-padding;
+	}
 </style>

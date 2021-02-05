@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<image v-for="image in imageList" class="image" :src="image"></image>
+		<image mode="aspectFill" v-for="image in imageList" class="image" :src="image"></image>
 		<view v-if="uploading" class="uploadingProgress">{{uploadProgress}}</view>
 		<view class="uploaderButton" @click="handleUpload">
 			<uni-icons class="uploaderButton__plusIcon" color="rgba(0,0,0,0.2)" type="plusempty" size="36"></uni-icons>
@@ -30,31 +30,34 @@
 					success(e) {
 						console.log('chooseImage ok...', e)
 						const filePath = e.tempFilePaths[0]
-						const fileName = e.tempFiles[0].name
+						const fileName = e.tempFiles[0].path
 						self.uploading = true
 						
-						plus.zip.compressImage({
-							src: filePath,
-							dst: new Date().getTime() + '.jpg',
-							format: 'jpg',
-							width: '100px',
-							height: '100px',
-							quality: 100,
-							overwrite: true
-						}, e => {
-							console.log('图片压缩', e)
-							const reader = new plus.io.FileReader()
-							reader.readAsDataURL(e.target)
-							reader.onloadend = e => {
-								const base64 = e.target.result
-								console.log('base64', base64)
-							}
-						}, err => {
-							console.log('压缩错误', err)
-						})
-						
+						// plus.zip.compressImage({
+						// 	src: filePath,
+						// 	dst: new Date().getTime() + '.jpg',
+						// 	format: 'jpg',
+						// 	width: '100px',
+						// 	height: '100px',
+						// 	quality: 100,
+						// 	overwrite: true
+						// }, e => {
+						// 	console.log('图片压缩', e)
+						// 	// const reader = new plus.io.FileReader()
+						// 	// reader.readAsDataURL(e.target)
+						// 	// reader.onloadend = e => {
+						// 	// 	const base64 = e.target.result
+						// 	// 	console.log('base64', base64)
+						// 	// }
+							
+							
+						// }, err => {
+						// 	console.log('压缩错误', err)
+						// })
+						console.log('uploading...')
 						uniCloud.uploadFile({
 							filePath: filePath,
+							// filePath: e.target,
 							cloudPath: fileName,
 							onUploadProgress({ loaded, total }) {
 								self.progress = loaded / total
@@ -63,6 +66,9 @@
 							success(e) {
 								self.uploading = false
 								self.$emit('onImageUpload', e.fileID)
+							},
+							fail(e) {
+								console.log('文件上传错误', e)
 							}
 						})
 					}

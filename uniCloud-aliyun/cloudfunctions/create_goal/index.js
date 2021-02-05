@@ -4,6 +4,7 @@ exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	event = {
 		timestamp: new Date().getTime(),
+		times: parseInt(event.times),
 		...event
 	}
 	console.log('event : ', event)
