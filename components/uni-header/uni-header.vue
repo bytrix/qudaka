@@ -7,7 +7,8 @@
 			<text class="header__title">
 				<slot></slot>
 			</text>
-			<uni-icons class="header__title__rightIcon" :type="rightIcon" size="19" @click="onIconClick"></uni-icons>
+			<uni-icons class="header__title__rightIcon" :type="rightIcon" size="19" @click="handleRightClick"></uni-icons>
+			<slot name='right'></slot>
 		</view>
 		<view class="header__after"></view>
 	</view>
@@ -15,7 +16,7 @@
 
 <script>
 	export default {
-		props: ['showBackIcon', 'leftIcon', 'rightIcon', 'onIconClick'],
+		props: ['showBackIcon', 'leftIcon', 'rightIcon'],
 		data() {
 			return {
 				
@@ -24,6 +25,9 @@
 		methods:{
 			back() {
 				uni.navigateBack()
+			},
+			handleRightClick() {
+				this.$emit('onIconClick')
 			}
 		}
 	}
@@ -37,14 +41,14 @@
 		box-sizing: border-box;
 		left: 0px;
 		background-color: white;
-		height: $uni-header-height;
+		min-height: $uni-header-height;
 		padding: 24rpx;
 		font-weight: bold;
 		text-align: center;
 		display: flex;
 	}
 	.header__after {
-		height: $uni-header-height;
+		min-height: $uni-header-height;
 	}
 	.header__title {
 		flex: 1;

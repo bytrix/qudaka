@@ -36,4 +36,9 @@
 		background-color: #FFFFFF;
 		width: 100%;
 	}
+	input {
+		border-bottom: 1px solid rgba($uni-color-primary, 0.3);
+		margin: 12px;
+		padding: 6px;
+	}
 </style>

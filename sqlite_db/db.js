@@ -25,7 +25,7 @@ export default {
 						resolve(e)
 					},
 					fail: e => {
-						console.log('数据库穿件失败', e)
+						console.log('数据库创建失败', e)
 						reject(e)
 					}
 				})
@@ -35,45 +35,60 @@ export default {
 		// if(isOpen) return
 	},
 	drop() {
-		plus.sqlite.executeSql({
-			name: db_name,
-			sql: `drop table ${this.table}`,
-			success(e) {
-				console.log('删除表成功')
-			}
+		return new Promise((resolve, reject) => {
+			return plus.sqlite.executeSql({
+				name: db_name,
+				sql: `DROP TABLE IF EXISTS ${this.table}`,
+				success(e) {
+					console.log('删除表成功')
+					resolve(e)
+				},
+				fail(e) {
+					console.error('删除表失败', e)
+					reject(e)
+				}
+			})
 		})
 	},
 	create(fields) {
-		fields = fields.map(({field, type, pk = false, isNull = true}) => {
-			return `${field} ${type} ${pk ? 'PRIMARY KEY ' : ''}${!isNull ? 'NOT NULL' : ''}`
+		fields = fields.map(({field, type, pk = false, notNull = false, unique = false}) => {
+			return `${field} ${type}${pk ? ' PRIMARY KEY' : ''}${notNull ? ' NOT NULL' : ''}${unique ? ' UNIQUE' : ''}`
 		}).join(', ')
-		const sql = `CREATE TABLE ${this.table} (${fields})`
+		const sql = `CREATE TABLE IF NOT EXISTS ${this.table} (${fields})`
 		console.log(sql)
-		plus.sqlite.executeSql({
-			name: db_name,
-			sql,
-			success(e) {
-				console.log('sql 执行成功', e)
-			},
-			fail(e) {
-				console.log('sql执行失败', e)
-			}
+		return new Promise((resolve, reject) => {
+			return plus.sqlite.executeSql({
+				name: db_name,
+				sql,
+				success(e) {
+					console.log(`${this.table}表创建成功`, e)
+					resolve(e)
+				},
+				fail(e) {
+					console.log(`${this.table}表创建失败`, e)
+					reject(e)
+				}
+			})
 		})
 	},
 	insert(data) {
 		const fields = Object.keys(data).join(',')
-		const values = Object.values(data).map(_ => `"${_}"`).join(',')
-		const sql = `insert into ${this.table}(${fields}) values(${values})`
-		// console.log('sql', sql)
-		plus.sqlite.executeSql({
-			name: db_name,
-			sql,
-			success(e) {
-				console.log('插入成功', e)
-			},
-			fail(e) {
-				console.log('插入失败', e)
-			}
+		const values = Object.values(data).map(_ => _ ? `"${_}"` : 'null').join(',')
+		const sql = `INSERT INTO ${this.table} (${fields}) VALUES(${values})`
+		console.log(sql)
+		return new Promise((resolve, reject) => {
+			plus.sqlite.executeSql({
+				name: db_name,
+				sql,
+				success(e) {
+					console.log('插入成功', e)
+					resolve(e)
+				},
+				fail(e) {
+					console.log('插入失败', e)
+					reject(e)
+				}
+			})
 		})
 	},
 	select() {
@@ -87,6 +102,30 @@ export default {
 				},
 				fail(e) {
 					console.log('查询失败', e)
+					reject(e)
+				}
+			})
+		})
+	},
+	update(newFields, whereCondition) {
+		newFields = Object.entries(newFields).map(([k, v]) => {
+			return `${k}="${v}"`
+		}).join(', ')
+		whereCondition = Object.entries(whereCondition).map(([k, v]) => {
+			return `${k}="${v}"`
+		}).join(', ')
+		const sql = `UPDATE ${this.table} SET ${newFields} WHERE ${whereCondition}`
+		console.log(sql)
+		return new Promise((resolve, reject) => {
+			plus.sqlite.executeSql({
+				name: db_name,
+				sql,
+				success(e) {
+					console.log('更新成功', e)
+					resolve(e)
+				},
+				fail(e) {
+					console.log('更新失败', e)
 					reject(e)
 				}
 			})

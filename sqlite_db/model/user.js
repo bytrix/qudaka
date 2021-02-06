@@ -1,47 +1,75 @@
-// import { open, create, insert, select } from './db.js'
 import db from '../db.js'
 import { db_name } from '../config.js'
-
-// export default function ({ username, avatar }) {
-// 	db.table = 'user'
-// 	db.open()
-// 	db.insert({
-// 		username,
-// 		avatar
-// 	})
-// }
 
 db.table = 'user'
 
 export default {
-	// 将登陆用户存储到数据库
-	save({ username, avatar, unionid }) {
+	truncate() {
+		console.log('清空user表')
 		db.open()
 		.then(() => {
-			// db.drop()
-			// db.create([
-			// 	{
-			// 		field: 'unionid',
-			// 		type: 'text',
-			// 		pk: true,
-			// 		isNull: false
-			// 	},
-			// 	{
-			// 		field: 'username',
-			// 		type: 'text',
-			// 		isNull: false
-			// 	},
-			// 	{
-			// 		field: 'avatar',
-			// 		type: 'text',
-			// 		isNull: false
-			// 	}
-			// ])
-			db.insert({
+			return db.drop()
+		})
+		.then(() => {
+			console.log('重新建表')
+			return db.create([
+				{
+					field: 'id',
+					type: 'text',
+					pk: true,
+					notNull: true
+				},
+				{
+					field: 'phone',
+					type: 'text',
+					notNull: true,
+					unique: true
+				},
+				{
+					field: 'username',
+					type: 'text',
+					notNull: true
+				},
+				{
+					field: 'avatar',
+					type: 'text',
+				},
+				{
+					field: 'gender',
+					type: 'char'
+				},
+				{
+					field: 'location',
+					type: 'text'
+				},
+				{
+					field: 'birthday',
+					type: 'text'
+				},
+				{
+					field: 'signature',
+					type: 'text'
+				}
+			])
+		})
+	},
+	// 将登陆用户存储到数据库
+	save({ id, username, avatar, phone }) {
+		return db.open()
+		.then(() => {
+			// truncate_user()
+			return db.insert({
+				id,
 				username,
 				avatar,
-				unionid
+				phone
 			})
+		})
+	},
+	update(newValues, whereCondition) {
+		console.log('update....', newValues, whereCondition)
+		return db.open().then(() => {
+			return db.update(newValues, whereCondition)
 		})
 	},
 	// 从数据库中获取当前登陆用户
