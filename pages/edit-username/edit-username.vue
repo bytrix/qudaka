@@ -3,7 +3,7 @@
 		<uni-header showBackIcon rightIcon="checkmarkempty" @onIconClick="onIconClick">
 			更改昵称
 		</uni-header>
-		<input v-model="user.username"/>
+		<input v-model="user.username" auto-focus/>
 	</view>
 </template>
 

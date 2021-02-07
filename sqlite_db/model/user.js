@@ -6,7 +6,7 @@ db.table = 'user'
 export default {
 	truncate() {
 		console.log('清空user表')
-		db.open()
+		return db.open()
 		.then(() => {
 			return db.drop()
 		})
@@ -54,16 +54,10 @@ export default {
 		})
 	},
 	// 将登陆用户存储到数据库
-	save({ id, username, avatar, phone }) {
+	save(fields) {
 		return db.open()
 		.then(() => {
-			// truncate_user()
-			return db.insert({
-				id,
-				username,
-				avatar,
-				phone
-			})
+			return db.insert(fields)
 		})
 	},
 	update(newValues, whereCondition) {

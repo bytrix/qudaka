@@ -57,7 +57,11 @@
 						id: result._id,
 						username: result.username,
 						phone: result.phone,
-						avatar: result.avatar
+						avatar: result.avatar,
+						gender: result.gender,
+						location: result.location,
+						birthday: result.birthday,
+						signature: result.signature
 					}).finally(() => {
 						uni.switchTab({
 							url: '../my/my'

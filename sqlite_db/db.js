@@ -36,9 +36,11 @@ export default {
 	},
 	drop() {
 		return new Promise((resolve, reject) => {
+			const sql = `DROP TABLE IF EXISTS ${this.table}`
+			console.log(sql)
 			return plus.sqlite.executeSql({
 				name: db_name,
-				sql: `DROP TABLE IF EXISTS ${this.table}`,
+				sql,
 				success(e) {
 					console.log('删除表成功')
 					resolve(e)
@@ -51,21 +53,22 @@ export default {
 		})
 	},
 	create(fields) {
+		const that = this
 		fields = fields.map(({field, type, pk = false, notNull = false, unique = false}) => {
 			return `${field} ${type}${pk ? ' PRIMARY KEY' : ''}${notNull ? ' NOT NULL' : ''}${unique ? ' UNIQUE' : ''}`
 		}).join(', ')
 		const sql = `CREATE TABLE IF NOT EXISTS ${this.table} (${fields})`
 		console.log(sql)
 		return new Promise((resolve, reject) => {
-			return plus.sqlite.executeSql({
+			plus.sqlite.executeSql({
 				name: db_name,
 				sql,
 				success(e) {
-					console.log(`${this.table}表创建成功`, e)
+					console.log(`${that.table}表创建成功`, e)
 					resolve(e)
 				},
 				fail(e) {
-					console.log(`${this.table}表创建失败`, e)
+					console.log(`${that.table}表创建失败`, e)
 					reject(e)
 				}
 			})

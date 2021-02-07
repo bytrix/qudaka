@@ -70,14 +70,14 @@
 					}
 				}).then(res => {
 					const pages = getCurrentPages()
-					const prevPage = pages[0]
+					// const prevPage = pages[0]
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {
 							user_id: '1'
 						}
 					}).then(({ result }) => {
-						prevPage.$vm.goals = result.data
+						// prevPage.$vm.goals = result.data
 						uni.hideLoading()
 						uni.navigateBack()
 					})
@@ -118,11 +118,11 @@
 			margin-left: 10px;
 		}
 	}
-	input {
-		background-color: white;
-		padding: 12px;
-		text-indent: 5px;
-	}
+	// input {
+	// 	background-color: white;
+	// 	padding: 12px;
+	// 	text-indent: 5px;
+	// }
 	.createGroup__createBtn {
 		margin-top: 24px;
 	}

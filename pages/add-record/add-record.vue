@@ -13,13 +13,11 @@
 </template>
 
 <script>
-	// import UniHeader from '../../components/uni-header.vue'
 	import ImageUploader from '../../components/image-uploader/image-uploader.vue'
 	import dayjs from 'dayjs'
 	import model from '../../sqlite_db/model/index.js'
 	export default {
 		components: {
-			// UniHeader,
 			ImageUploader
 		},
 		data() {
@@ -41,9 +39,9 @@
 		},
 		methods: {
 			addRecord(formData) {
-				uni.showLoading()
 				model.user.get()
 				.then(u => {
+					uni.showLoading()
 					return uniCloud.callFunction({
 						name: 'add_record',
 						data:{
@@ -62,12 +60,16 @@
 						}
 					})
 				})
-				// .catch(e => {
-				// 	console.log('错误', e)
-				// 	uni.showToast({
-				// 		title: e
-				// 	})
-				// })
+				.catch(e => {
+					console.log('错误', e)
+					uni.hideLoading()
+					uni.showToast({
+						icon: 'none',
+						title: e,
+						position: 'bottom'
+					})
+					return new Promise(() => {})
+				})
 				.then(() => {
 					console.log('update_goal....', this.goal)
 					return uniCloud.callFunction({

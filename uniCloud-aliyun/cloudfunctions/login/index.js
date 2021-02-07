@@ -6,7 +6,7 @@ exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	console.log('event : ', event)
 	const { phone } = event
-	const collection = await db.collection('db-user')
+	const collection = await db.collection('user')
 	const res_matched_user = await collection.where({ phone }).get()
 	const matched_users = res_matched_user.data
 	console.log('匹配用户', matched_users)

@@ -3,46 +3,47 @@
 		<uni-header>我的</uni-header>
 		<view v-if="isLogin">
 			<uni-list>
-				<uni-list-item :clickable="true" link>
+				<uni-list-item class="listItem" :clickable="true" @click="changeAvatar" link>
 					<template slot="header">
 						<text style="line-height: 48px; color: #3b4144; font-size: 14px;">头像</text>
 					</template>
 					<template slot="footer">
-						<image class="listItemTop__avatar" :src="user.avatar"></image>
+						<image mode="aspectFill" class="listItemTop__avatar" :src="user.avatar"></image>
 					</template>
 				</uni-list-item>
-				<uni-list-item :clickable="true" title="昵称" @click="changeUsername" link>
+				<uni-list-item class="listItem" :clickable="true" title="昵称" @click="changeUsername" link>
 					<template slot="footer">
 						<text class="listItem__footerText">{{user.username}}</text>
 					</template>
 				</uni-list-item>
-				<uni-list-item title="手机号">
+				<uni-list-item class="listItem" title="手机号">
 					<template slot="footer">
 						<text class="listItem__footerText">{{user.phone}}</text>
 					</template>
 				</uni-list-item>
-				<!-- <uni-list-item :clickable="true" @click="create_group" title="制定目标" link></uni-list-item> -->
-				<uni-list-item :clickable="true" title="性别" @click="changeGender" link>
+				<!-- <uni-list-item class="listItem" :clickable="true" @click="create_group" title="制定目标" link></uni-list-item> -->
+				<uni-list-item class="listItem" :clickable="true" title="性别" @click="changeGender" link>
 					<template slot="footer">
 						<text class="listItem__footerText">{{user.gender}}</text>
 					</template>
 				</uni-list-item>
-				<uni-list-item :clickable="true" title="常住地" @click="changeLocation" link>
+				<uni-list-item class="listItem" :clickable="true" title="常住地" @click="changeLocation" link>
 					<template slot="footer">
 						<text class="listItem__footerText">{{user.location}}</text>
 					</template>
 				</uni-list-item>
-				<uni-list-item :clickable="true" title="生日" @click="changeBirthday" link>
+				<uni-list-item class="listItem" :clickable="true" title="生日" @click="changeBirthday" link>
 					<template slot="footer">
 						<text class="listItem__footerText">{{user.birthday}}</text>
 					</template>
 				</uni-list-item>
-				<uni-list-item :clickable="true" title="签名" link>
+				<uni-list-item class="listItem" :clickable="true" title="签名" @click="changeSignature" link>
 					<template slot="footer">
 						<text class="listItem__footerText">{{user.signature}}</text>
 					</template>
 				</uni-list-item>
 			</uni-list>
+			<button class="logoutBtn" type="warn" @click="logout">退出登陆</button>
 		</view>
 		<view v-else class="loginBtn" @click="toLogin">点击登陆</view>
 		
@@ -53,9 +54,10 @@
 	import model from '../../sqlite_db/model/index.js'
 	import db from '../../sqlite_db/db.js'
 	import { objectPropFill } from '../../utils/utils.js'
+	import querystring from 'querystring'
 	export default {
 		data() {
-			return {
+			return {	
 				isLogin: false,
 				user: {
 					id: '123',
@@ -65,8 +67,6 @@
 		},
 		onShow() {
 			// #ifdef APP-PLUS
-			// model.user.truncate()
-			// this.isLogin = false
 			model.user.get().then(u => {
 				this.user = objectPropFill(u, '未填写')
 				this.isLogin = true
@@ -87,9 +87,49 @@
 					url: '../login/login'
 				})
 			},
+			changeAvatar() {
+				const that = this
+				uni.chooseImage({
+					success(e) {
+						uni.showLoading()
+						const filePath = e.tempFilePaths[0]
+						console.log('filePath', filePath)
+						return uniCloud.uploadFile({
+							filePath: filePath,
+							cloudPath: filePath,
+							onUploadProgress(e) {
+								console.log('on upload progress', e)
+							},
+							success(e) {
+								console.log('ok', e.fileID)
+								uniCloud.callFunction({
+									name: 'change_user_avatar',
+									data: {
+										user_id: that.user.id,
+										avatar: e.fileID
+									}
+								}).then(() => {
+									return model.user.update({
+										avatar: e.fileID
+									}, {
+										id: that.user.id
+									})
+								}).then(() => {
+									that.user.avatar = e.fileID
+									uni.hideLoading()
+								})
+							}
+						})
+					}
+				})
+			},
 			changeUsername() {
+				const p = querystring.stringify({
+					username: this.user.username,
+					id: this.user.id
+				})
 				uni.navigateTo({
-					url: `../edit-username/edit-username?username=${this.user.username}&id=${this.user.id}`
+					url: '../edit-username/edit-username?' + p
 				})
 			},
 			changeGender() {
@@ -127,12 +167,32 @@
 				uni.navigateTo({
 					url: '../change-location/change-location?user_id=' + this.user.id
 				})
+			},
+			changeSignature() {
+				const p = querystring.stringify({
+					user_id: this.user.id,
+					signature: this.user.signature
+				})
+				uni.navigateTo({
+					url: '../change-signature/change-signature?' + p
+				})
+			},
+			logout() {
+				const that = this
+				model.user.truncate().then(() => {
+					that.isLogin = false
+				})
 			}
 		}
 	}
 </script>
 
 <style lang="scss">
+	.listItem {
+		padding: 5px 10px;
+		// border: 1rpx solid #FFFFFF;
+		border: none;
+	}
 	.listItemTop__avatar {
 		width: 48px;
 		height: 48px;
@@ -158,5 +218,8 @@
 		line-height: 30px;
 		border-radius: 15px;
 		margin: 48px auto;
+	}
+	.logoutBtn {
+		margin: 24px;
 	}
 </style>

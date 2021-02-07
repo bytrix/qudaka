@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<uni-header rightIcon='plusempty' :onIconClick="onIconClick">趣打卡</uni-header>
+		<uni-header rightIcon='plusempty' @onIconClick="onIconClick">趣打卡</uni-header>
 		<scroll-view scroll-y="true" :style="{height:scrollHeight+'px'}">
 			<uni-swipe-action v-for="goal in c_goals">
 				<uni-swipe-action-item>
@@ -87,8 +87,10 @@
 				})
 			},
 			onIconClick() {
+				console.log(8888)
 				uni.navigateTo({
-					url: '/pages/create-goal/create-goal'
+					// url: '/pages/create-goal/create-goal'
+					url: '../create-goal/create-goal'
 				})
 			},
 			editGoal() {},

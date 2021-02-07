@@ -8,11 +8,9 @@
 </template>
 
 <script>
-	// import UniHeader from '../../components/uni-header.vue'
 	import FlexScrollView from '../../components/flex-scroll-view/flex-scroll-view.vue'
 	export default {
 		components: {
-			// UniHeader,
 			FlexScrollView
 		},
 		data() {
@@ -22,12 +20,21 @@
 		},
 		onLoad() {
 			uni.showLoading()
-			uniCloud.callFunction({
-				name: 'get_records'
-			}).then(({ result }) => {
-				this.records = result.data
-				uni.hideLoading()
-			})
+			const db = uniCloud.database()
+			db.collection('record,user')
+				.field('user_id{username,avatar},text,goal,images')
+				.get()
+				.then(({ result }) => {
+					console.log('result', result.data)
+					this.records = result.data
+					uni.hideLoading()
+				})
+			// uniCloud.callFunction({
+			// 	name: 'get_records'
+			// }).then(({ result }) => {
+			// 	console.log('records', result)
+			// 	this.records = result.data
+			// })
 		},
 		methods: {
 

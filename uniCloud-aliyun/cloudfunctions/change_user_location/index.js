@@ -4,8 +4,8 @@ exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	console.log('event : ', event)
 	const { user_id, location } = event
-	const collection = db.collection('db-user')
-	const res = collection.doc(user_id).update({
+	const collection = await db.collection('user')
+	const res = await collection.doc(user_id).update({
 		location
 	})
 	

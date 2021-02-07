@@ -87,6 +87,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/change-signature/change-signature",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

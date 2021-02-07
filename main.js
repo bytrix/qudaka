@@ -4,7 +4,6 @@ import store from './store/index.js'
 
 Vue.prototype.$store = store
 Vue.prototype.$headerHeight = 46
-// Vue.prototype.$user = {}
 Vue.config.productionTip = false
 
 App.mpType = 'app'

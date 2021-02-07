@@ -1,9 +1,9 @@
 <template>
 	<view class="record__card">
 		<view class="record__header">
-			<image class="record__header__userAvatar" :src="record.user.avatar"></image>
+			<image class="record__header__userAvatar" :src="record.user_id[0].avatar"></image>
 			<view class="record__header__user">
-				<view class="record__header__username">{{record.user.username}}</view>
+				<view class="record__header__username">{{record.user_id[0].username}}</view>
 				<view class="record__header__goalTrackerText">
 					{{record.goal.goal_name}}，已坚持{{record.goal.times}}天
 				</view>

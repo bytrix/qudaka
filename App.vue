@@ -33,7 +33,7 @@
 		box-sizing: border-box;
 	}
 	textarea {
-		background-color: #FFFFFF;
+		// background-color: #FFFFFF;
 		width: 100%;
 	}
 	input {
