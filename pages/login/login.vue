@@ -62,6 +62,8 @@
 						location: result.location,
 						birthday: result.birthday,
 						signature: result.signature
+					}).catch(e => {
+						console.error('本地存储用户失败', e)
 					}).finally(() => {
 						uni.switchTab({
 							url: '../my/my'

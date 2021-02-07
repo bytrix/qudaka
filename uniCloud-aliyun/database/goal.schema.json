@@ -12,15 +12,7 @@
 		"_id": {
 			"description": "ID，系统自动生成"
 		},
-		"user_id": {
-			"bsonType": "string",
-			"foreignKey": "user._id"
-		},
-		"goal_id": {
-			"bsonType": "string",
-			"foreignKey": "goal._id"
-		},
-		"text": {
+		"goal_name": {
 			"bsonType": "string"
 		}
 	}

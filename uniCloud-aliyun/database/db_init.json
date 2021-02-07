@@ -25,10 +25,11 @@
 	"goal": {
 		"data": [
 			{
+				"_id": "123",
 				"goal_name": "学英语",
 				"images": [],
-				"start_time": "",
-				"end_time": "",
+				"start_time": "2021-02-07",
+				"end_time": "2021-02-13",
 				"create_by": "1",
 				"timestamp": 0,
 				"times": 0
@@ -43,10 +44,10 @@
 					"https://ci.xiaohongshu.com/89f02c51-5fd5-c6fb-a944-c4cb2f451ec0?imageView2/2/w/1080/format/jpg",
 					"https://ci.xiaohongshu.com/572d7d31-ae2d-d4d5-8893-9c33a8c10ef8?imageView2/2/w/1080/format/jpg"
 				],
-				// "goal_id": "123",
-				"goal": {
-					"goal_name": "健身打卡"
-				},
+				"goal_id": "123",
+				// "goal": {
+				// 	"goal_name": "健身打卡"
+				// },
 				// "user": {
 				// 	"username": "王敢敢噗💨",
 				// 	"avatar": "https://img.xiaohongshu.com/avatar/5dde6ace93e3cb00015f0955.jpg@240w_240h_90q_1e_1c_1x.jpg"

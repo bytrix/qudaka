@@ -15,14 +15,15 @@
 		},
 		data() {
 			return {
-				records: []
+				records: [],
 			}
 		},
 		onLoad() {
 			uni.showLoading()
 			const db = uniCloud.database()
 			db.collection('record,user')
-				.field('user_id{username,avatar},text,goal,images')
+				.field('user_id{username,avatar},text,images,goal,create_time')
+				.orderBy('create_time', 'desc')
 				.get()
 				.then(({ result }) => {
 					console.log('result', result.data)

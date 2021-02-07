@@ -24,7 +24,6 @@
 								<view style="font-size: 12px; margin-top: 4px;">已坚持</view>
 							</view>
 						</view>
-						<!-- <view class="goal__progressBar" :style="{width: (goal.times / goal.diff)*100+'%'}"></view> -->
 						<view class="goal__progressBar">
 							<view class="goal__progressBar__progress" :style="{width: (goal.times / goal.diff)*100+'%'}"></view>
 						</view>
@@ -36,12 +35,8 @@
 </template>
 
 <script>
-	// import UniHeader from '../../components/uni-header.vue'
 	import dayjs from 'dayjs'
 	export default {
-		components:{
-			// UniHeader
-		},
 		onReady() {
 			const that = this
 			uni.getSystemInfo({
@@ -54,16 +49,10 @@
 			})
 		},
 		onLoad() {
-			uni.showLoading()
-			uniCloud.callFunction({
-				name: 'get_goal',
-				data: {
-					user_id: '1'
-				}
-			}).then(({ result }) => {
-				this.goals = result.data
-				uni.hideLoading()
-			})
+			this.getGoals()
+		},
+		onShow() {
+			this.getGoals()
 		},
 		data() {
 			return {
@@ -80,29 +69,34 @@
 			}
 		},
 		methods: {
+			getGoals() {
+				uni.showLoading()
+				uniCloud.callFunction({
+					name: 'get_goal',
+					data: {
+						user_id: '1'
+					}
+				}).then(({ result }) => {
+					this.goals = result.data
+					uni.hideLoading()
+				})
+			},
 			addRecord(goal) {
-				console.log('add record', goal)
 				uni.navigateTo({
 					url:`../add-record/add-record?goal_id=${goal._id}&goal_name=${goal.goal_name}&goal_times=${goal.times}`
 				})
 			},
 			onIconClick() {
-				console.log(8888)
 				uni.navigateTo({
-					// url: '/pages/create-goal/create-goal'
 					url: '../create-goal/create-goal'
 				})
 			},
 			editGoal() {},
 			removeGoal(id, goal_name) {
-				// uni.showModal({
-				// 	title: 'aa'
-				// })
 				const that = this
 				uni.showModal({
 					title: `删除目标：${goal_name}？`,
 					success({ confirm }) {
-						// console.log('ok...', res)
 						if(confirm) {
 							uni.showLoading()
 							uniCloud.callFunction({
@@ -139,8 +133,7 @@
 		margin: 0px 10px;
 	}
 	.goal__progressBar__progress {
-		/* width: 100%; */
-		background-color: blue;
+		/* background-color: blue; */
 		background-color: #3F536E;
 	}
 	.goal__board {

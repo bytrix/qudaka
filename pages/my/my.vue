@@ -57,7 +57,7 @@
 	import querystring from 'querystring'
 	export default {
 		data() {
-			return {	
+			return {
 				isLogin: false,
 				user: {
 					id: '123',
@@ -67,10 +67,18 @@
 		},
 		onShow() {
 			// #ifdef APP-PLUS
-			model.user.get().then(u => {
-				this.user = objectPropFill(u, '未填写')
+			if(this.$store.state.user) {
+				this.user = this.$store.state.user
 				this.isLogin = true
-			})
+			} else {
+				model.user.get().then(u => {
+					this.user = objectPropFill(u, '未填写')
+					this.isLogin = true
+					this.$store.state.user = u
+					this.$store.commit('login', u)
+				})
+			}
+			// this.$store.commit()
 			// #endif
 			// #ifdef H5
 			this.isLogin = true
@@ -181,6 +189,7 @@
 				const that = this
 				model.user.truncate().then(() => {
 					that.isLogin = false
+					this.$store.state.user = null
 				})
 			}
 		}

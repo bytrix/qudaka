@@ -3,13 +3,14 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 const store = new Vuex.Store({
 	actions:{},
-	mutations:{},
+	mutations:{
+		login(state, payload) {
+			state.user = payload
+		}
+	},
 	state:{
 		scrollHeight: 0,
-		user: {
-			username: '',
-			avatar: ''
-		}
+		user: null
 	}
 })
 export default store

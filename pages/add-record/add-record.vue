@@ -41,20 +41,23 @@
 			addRecord(formData) {
 				model.user.get()
 				.then(u => {
+					console.log('local user', u)
 					uni.showLoading()
 					return uniCloud.callFunction({
 						name: 'add_record',
 						data:{
 							images: this.imageList,
-							user: {
-								username: u.username,
-								avatar: u.avatar,
-								unionid: u.unionid
-							},
+							// user: {
+							// 	username: u.username,
+							// 	avatar: u.avatar,
+							// 	unionid: u.unionid
+							// },
 							goal: {
 								goal_name: this.goal.name,
 								times: this.goal.times + 1
 							},
+							// goal_id: this.goal.id,
+							user_id: u.id,
 							text: formData.detail.value.text,
 							create_time: dayjs().format('YYYY-MM-DD HH:mm:ss')
 						}

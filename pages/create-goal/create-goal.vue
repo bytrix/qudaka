@@ -25,11 +25,7 @@
 
 <script>
 	import dayjs from 'dayjs'
-	// import UniHeader from '../../components/uni-header.vue'
 	export default {
-		components: {
-			// UniHeader
-		},
 		computed: {
 			isDisabled() {
 				return this.goal_name === '' || this.end_time === ''
@@ -69,15 +65,13 @@
 						times: 0
 					}
 				}).then(res => {
-					const pages = getCurrentPages()
-					// const prevPage = pages[0]
+					// const pages = getCurrentPages()
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {
 							user_id: '1'
 						}
 					}).then(({ result }) => {
-						// prevPage.$vm.goals = result.data
 						uni.hideLoading()
 						uni.navigateBack()
 					})
