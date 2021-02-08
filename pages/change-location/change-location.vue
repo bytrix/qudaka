@@ -70,6 +70,9 @@
 					})
 				}).then(() => {
 					uni.hideLoading()
+					this.$store.commit('user', {
+						location
+					})
 					console.log('本地数据location更新成功')
 					uni.switchTab({
 						url: '../my/my'
@@ -83,6 +86,7 @@
 			uniCloud.callFunction({
 				name: 'get_china_province'
 			}).then(({ result }) => {
+				console.log('get_china_province result', result)
 				this.provinces = result.data
 				this.provinceIndex = this.provinces.length / 2
 				const province = this.provinces[this.provinceIndex]

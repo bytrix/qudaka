@@ -53,6 +53,7 @@
 				}).then(({ result }) => {
 					console.log('result', result)
 					// #ifdef APP-PLUS
+					// model.user.truncate()
 					model.user.save({
 						id: result._id,
 						username: result.username,
@@ -64,10 +65,17 @@
 						signature: result.signature
 					}).catch(e => {
 						console.error('本地存储用户失败', e)
-					}).finally(() => {
+						if(e.code === -1404) {
+							console.log('新建本地数据库')
+							return model.user.truncate()
+						}
+					}).then((e) => {
+						console.log('commit state in login', result, e)
+						this.$store.commit('user', result)
 						uni.switchTab({
 							url: '../my/my'
 						})
+					}).finally(() => {
 						this.btnLoading = false
 					})
 					// #endif

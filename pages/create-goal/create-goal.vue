@@ -43,10 +43,21 @@
 		},
 		methods: {
 			formSubmit(e) {
+				const user = this.$store.state.user
+				if(!user) {
+					uni.showToast({
+						icon: 'none',
+						position: 'bottom',
+						title: '您未登陆'
+					})
+					return
+				}
 				uni.showLoading({
 					title:'创建目标'
 				})
-				console.log('form submit', e.detail.value)
+				const user_id = user.id
+				// console.log('创建目标', this.$store.state.user)
+				// console.log('form submit', e.detail.value)
 				const {
 					goal_name,
 					start_time,
@@ -57,7 +68,7 @@
 				uniCloud.callFunction({
 					name: 'create_goal',
 					data: {
-						create_by: '1',
+						create_by: user_id,
 						goal_name,
 						start_time,
 						end_time,
@@ -65,11 +76,10 @@
 						times: 0
 					}
 				}).then(res => {
-					// const pages = getCurrentPages()
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {
-							user_id: '1'
+							user_id
 						}
 					}).then(({ result }) => {
 						uni.hideLoading()

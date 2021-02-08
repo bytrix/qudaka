@@ -3,11 +3,12 @@ const db = uniCloud.database()
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	console.log('event : ', event)
-	const { id, username } = event
+	const { user_id, username } = event
 	const collection = await db.collection('user')
-	const res = await collection.doc(id).update({
+	const res = await collection.doc(user_id).update({
 		username
 	})
+	console.log('res...', res)
 	
 	//返回数据给客户端
 	return res

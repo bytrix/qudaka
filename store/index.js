@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import _ from 'lodash'
 Vue.use(Vuex)
 const store = new Vuex.Store({
 	actions:{},
 	mutations:{
-		login(state, payload) {
-			state.user = payload
+		user(state, payload) {
+			state.user = _.assign(state.user, payload)
 		}
 	},
 	state:{

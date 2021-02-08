@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<uni-header>我的</uni-header>
-		<view v-if="isLogin">
+		<view v-if="user!==null">
 			<uni-list>
 				<uni-list-item class="listItem" :clickable="true" @click="changeAvatar" link>
 					<template slot="header">
@@ -21,25 +21,24 @@
 						<text class="listItem__footerText">{{user.phone}}</text>
 					</template>
 				</uni-list-item>
-				<!-- <uni-list-item class="listItem" :clickable="true" @click="create_group" title="制定目标" link></uni-list-item> -->
 				<uni-list-item class="listItem" :clickable="true" title="性别" @click="changeGender" link>
 					<template slot="footer">
-						<text class="listItem__footerText">{{user.gender}}</text>
+						<text class="listItem__footerText">{{user.gender || empty}}</text>
 					</template>
 				</uni-list-item>
 				<uni-list-item class="listItem" :clickable="true" title="常住地" @click="changeLocation" link>
 					<template slot="footer">
-						<text class="listItem__footerText">{{user.location}}</text>
+						<text class="listItem__footerText">{{user.location || empty}}</text>
 					</template>
 				</uni-list-item>
 				<uni-list-item class="listItem" :clickable="true" title="生日" @click="changeBirthday" link>
 					<template slot="footer">
-						<text class="listItem__footerText">{{user.birthday}}</text>
+						<text class="listItem__footerText">{{user.birthday || empty}}</text>
 					</template>
 				</uni-list-item>
 				<uni-list-item class="listItem" :clickable="true" title="签名" @click="changeSignature" link>
 					<template slot="footer">
-						<text class="listItem__footerText">{{user.signature}}</text>
+						<text class="listItem__footerText">{{user.signature || empty}}</text>
 					</template>
 				</uni-list-item>
 			</uni-list>
@@ -58,32 +57,28 @@
 	export default {
 		data() {
 			return {
-				isLogin: false,
-				user: {
-					id: '123',
-					username: 'jack'
-				}
+				// isLogin: false,
+				// user: {
+				// 	id: '123',
+				// 	username: 'jack'
+				// }
+				empty: '未填写'
 			}
 		},
-		onShow() {
-			// #ifdef APP-PLUS
-			if(this.$store.state.user) {
-				this.user = this.$store.state.user
-				this.isLogin = true
-			} else {
-				model.user.get().then(u => {
-					this.user = objectPropFill(u, '未填写')
-					this.isLogin = true
-					this.$store.state.user = u
-					this.$store.commit('login', u)
-				})
+		computed: {
+			user() {
+				return this.$store.state.user
 			}
-			// this.$store.commit()
-			// #endif
-			// #ifdef H5
-			this.isLogin = true
-			// #endif
 		},
+		// onShow() {
+		// 	uni.showToast({
+		// 		icon: 'none',
+		// 		title: 'user:' + JSON.stringify(this.$store.state.user)
+		// 	})
+		// 	// #ifdef H5
+		// 	this.isLogin = true
+		// 	// #endif
+		// },
 		methods: {
 			create_group() {
 				uni.navigateTo({
@@ -134,8 +129,9 @@
 			changeUsername() {
 				const p = querystring.stringify({
 					username: this.user.username,
-					id: this.user.id
+					user_id: this.user.id
 				})
+				console.log('navigate to username', p)
 				uni.navigateTo({
 					url: '../edit-username/edit-username?' + p
 				})
@@ -150,7 +146,7 @@
 						uniCloud.callFunction({
 							name: 'change_gender',
 							data: {
-								id: this.user.id,
+								user_id: this.user.id,
 								gender
 							}
 						}).then(() => {
@@ -188,7 +184,7 @@
 			logout() {
 				const that = this
 				model.user.truncate().then(() => {
-					that.isLogin = false
+					// that.isLogin = false
 					this.$store.state.user = null
 				})
 			}

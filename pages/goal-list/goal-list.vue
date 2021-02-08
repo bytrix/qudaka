@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<uni-header rightIcon='plusempty' @onIconClick="onIconClick">趣打卡</uni-header>
-		<scroll-view scroll-y="true" :style="{height:scrollHeight+'px'}">
+		<scroll-view v-if="user" scroll-y="true" :style="{height:scrollHeight+'px'}">
 			<uni-swipe-action v-for="goal in c_goals">
 				<uni-swipe-action-item>
 					<template v-slot:right>
@@ -31,6 +31,10 @@
 				</uni-swipe-action-item>
 			</uni-swipe-action>
 		</scroll-view>
+		<view class="unloginLogo" v-else>
+			<uni-icons type="info" size="32"></uni-icons>
+			<view>您未登陆</view>
+		</view>
 	</view>
 </template>
 
@@ -66,20 +70,32 @@
 					..._,
 					diff: dayjs(_.end_time).diff(_.start_time, 'd')
 				}))
+			},
+			user() {
+				return this.$store.state.user
 			}
 		},
 		methods: {
 			getGoals() {
-				uni.showLoading()
-				uniCloud.callFunction({
-					name: 'get_goal',
-					data: {
-						user_id: '1'
-					}
-				}).then(({ result }) => {
-					this.goals = result.data
-					uni.hideLoading()
-				})
+				// uni.showToast({
+				// 	icon: 'none',
+				// 	title: 'user:'+JSON.stringify(this.$store.state.user)
+				// })
+				console.log('local user', this.$store.state.user)
+				if(this.$store.state.user) {
+					uni.showLoading()
+					uniCloud.callFunction({
+						name: 'get_goal',
+						data: {
+							user_id: this.$store.state.user.id
+						}
+					}).then(({ result }) => {
+						this.goals = result.data
+						uni.hideLoading()
+					})
+				} else {
+					this.goals = []
+				}
 			},
 			addRecord(goal) {
 				uni.navigateTo({
@@ -175,5 +191,10 @@
 		margin: 10px 0px;
 		vertical-align: center;
 		line-height: 75px;
+	}
+	.unloginLogo {
+		text-align: center;
+		margin: 32px;
+		opacity: 0.25;
 	}
 </style>

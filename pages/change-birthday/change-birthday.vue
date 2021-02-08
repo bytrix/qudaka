@@ -59,6 +59,9 @@
 						id: this.user_id
 					})
 				}).then(() => {
+					this.$store.commit('user', {
+						birthday
+					})
 					uni.hideLoading()
 					uni.switchTab({
 						url: '../my/my'

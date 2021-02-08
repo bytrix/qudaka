@@ -21,7 +21,8 @@ exports.main = async (event, context) => {
 			registered: true,
 			// username: username,
 			// phone: phone
-			...matched_users[0]
+			...matched_users[0],
+			id: res._id
 		}
 	}
 	//返回数据给客户端

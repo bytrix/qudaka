@@ -31,6 +31,9 @@
 						id: this.user_id
 					})
 				}).then(() => {
+					this.$store.commit('user', {
+						signature: this.signature
+					})
 					uni.hideLoading()
 					uni.switchTab({
 						url: '../my/my'

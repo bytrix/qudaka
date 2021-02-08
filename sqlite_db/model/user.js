@@ -62,7 +62,8 @@ export default {
 	},
 	update(newValues, whereCondition) {
 		console.log('update....', newValues, whereCondition)
-		return db.open().then(() => {
+		return db.open()
+		.then(() => {
 			return db.update(newValues, whereCondition)
 		})
 	},
