@@ -14,7 +14,8 @@ exports.main = async (event, context) => {
 		const res = await collection.add(event)
 		return {
 			...res,
-			...event
+			...event,
+			friend_id: []
 		}
 	} else {
 		return {
@@ -22,7 +23,7 @@ exports.main = async (event, context) => {
 			// username: username,
 			// phone: phone
 			...matched_users[0],
-			id: res._id
+			id: matched_users[0]._id
 		}
 	}
 	//返回数据给客户端

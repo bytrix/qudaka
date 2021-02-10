@@ -35,6 +35,10 @@
 		},
 		"signature": {
 			"bsonType":"string"
+		},
+		"friend_id": {
+			"bsonType":"array",
+			"foreignKey":"user._id"
 		}
 	}
 }

@@ -22,7 +22,7 @@
 			uni.showLoading()
 			const db = uniCloud.database()
 			db.collection('record,user')
-				.field('user_id{username,avatar},text,images,goal,create_time')
+				.field('user_id{username,avatar,signature},text,images,goal,create_time')
 				.orderBy('create_time', 'desc')
 				.get()
 				.then(({ result }) => {

@@ -96,6 +96,42 @@
             }
             
         }
+        ,{
+            "path" : "pages/friend-list/friend-list",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/report-chart/report-chart",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/user/user",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/record/record",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -104,6 +140,7 @@
 		"navigationBarBackgroundColor": "#007AFF",
 		"backgroundColor": "#F8F8F8",
 		"app-plus":{
+			"navigationStyle":"custom",
 			"titleNView":false
 		},
 		"disableScroll": true
@@ -120,6 +157,10 @@
 			{
 				"pagePath":"pages/goal-list/goal-list",
 				"text":"打卡"
+			},
+			{
+				"pagePath":"pages/friend-list/friend-list",
+				"text":"好友"
 			},
 			{
 				"pagePath":"pages/my/my",

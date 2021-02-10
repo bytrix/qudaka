@@ -9,7 +9,7 @@
 		onLaunch: function() {
 			console.log('App Launch')
 			// #ifdef APP-PLUS
-			plus.navigator.setFullscreen(true)
+			// plus.navigator.setFullscreen(true)
 			if(this.$store.state.user) {
 				// this.user = this.$store.state.user
 				this.isLogin = true
@@ -28,7 +28,8 @@
 			const self = this
 			uni.getSystemInfo({
 				success(res) {
-					const scrollHeight = res.windowHeight - self.$headerHeight - 50
+					const scrollHeight = res.windowHeight - self.$headerHeight
+					console.log('getSystemInfo', res.windowHeight, self.$headerHeight)
 					self.$store.state.scrollHeight = scrollHeight
 				}
 			})
@@ -37,7 +38,7 @@
 			console.log('App Hide')
 		},
 		onReady: function() {
-			console.log('getSystemInfo')
+			console.log('onReady')
 		}
 		
 	}

@@ -1,30 +1,48 @@
 <template>
 	<view>
 		<uni-header rightIcon='plusempty' @onIconClick="onIconClick">趣打卡</uni-header>
+		<view v-if="user" class="statBar" @click="toReportChart">
+			<text class="statInfo">
+				{{c_goals.length}}项目标，已完成{{c_goals.filter(_ => _.times === _.diff).length}}项
+			</text>
+			<view>
+				查看统计
+				<uni-icons type="forward" size="12"></uni-icons>
+			</view>
+		</view>
 		<scroll-view v-if="user" scroll-y="true" :style="{height:scrollHeight+'px'}">
 			<uni-swipe-action v-for="goal in c_goals">
 				<uni-swipe-action-item>
 					<template v-slot:right>
 						<view class="swipeActionItem__rightOption">
+							<!-- <view class="swipeActionItem__rightOption-btn">
+								<uni-icons @click="viewGoal" size='18' type="eye" style="color: #007AFF"></uni-icons>
+							</view> -->
 							<view class="swipeActionItem__rightOption-btn">
-								<uni-icons @click="editGoal" size='18' type="compose" style="color: #007AFF"></uni-icons>
-							</view>
-							<view class="swipeActionItem__rightOption-btn">
-								<uni-icons @click="removeGoal(goal._id, goal.goal_name)" size='18' type="closeempty" style="color: #dd524d"></uni-icons>
+								<uni-icons @click="removeGoal(goal._id, goal.goal_name)" size='28' type="closeempty" style="color: #dd524d"></uni-icons>
 							</view>
 						</view>
 					</template>
 					<view class="goal" @click="addRecord(goal)">
 						<view class="goal__board">
-							<text class="goal__goalName">
-								{{goal.goal_name}}
-							</text>
-							<view class="goal__daysPersist">
+							<view :class="['goal__goalName', {'goal__disabled':goal.diff === goal.times}]">
+								<view>{{goal.goal_name}}</view>
+								<view style="font-size: 0.7em; margin-top: 1em; color: #bbbbbb;">
+									{{goal.start_time}} ~ {{goal.end_time}}
+								</view>
+							</view>
+							<view v-if="goal.diff === goal.times">
+								<view class="goal__finishIcon">
+									<uni-icons type="star-filled" color="white"></uni-icons>
+									完成
+								</view>
+							</view>
+							<view v-else class="goal__daysPersist">
 								<view class="goal__daysPersist__days">{{goal.times}} 天</view>
 								<view style="font-size: 12px; margin-top: 4px;">已坚持</view>
 							</view>
 						</view>
-						<view class="goal__progressBar">
+						<view class="goal__progressBar" v-if="goal.diff > goal.times">
 							<view class="goal__progressBar__progress" :style="{width: (goal.times / goal.diff)*100+'%'}"></view>
 						</view>
 					</view>
@@ -40,6 +58,7 @@
 
 <script>
 	import dayjs from 'dayjs'
+	import querystring from 'querystring'
 	export default {
 		onReady() {
 			const that = this
@@ -61,7 +80,18 @@
 		data() {
 			return {
 				goals: [],
-				scrollHeight: 0
+				scrollHeight: 0,
+				tabIndex: 'goals',
+				tabList: [
+					{
+						title: '目标',
+						key: 'goals'
+					},
+					{
+						title: '统计',
+						key: 'stat'
+					}
+				]
 			}
 		},
 		computed: {
@@ -76,6 +106,9 @@
 			}
 		},
 		methods: {
+			onTabChange(key) {
+				this.tabIndex = key
+			},
 			getGoals() {
 				// uni.showToast({
 				// 	icon: 'none',
@@ -83,13 +116,14 @@
 				// })
 				console.log('local user', this.$store.state.user)
 				if(this.$store.state.user) {
-					uni.showLoading()
+					// uni.showLoading()
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {
 							user_id: this.$store.state.user.id
 						}
 					}).then(({ result }) => {
+						console.log('result.data', result.data)
 						this.goals = result.data
 						uni.hideLoading()
 					})
@@ -98,16 +132,39 @@
 				}
 			},
 			addRecord(goal) {
-				uni.navigateTo({
-					url:`../add-record/add-record?goal_id=${goal._id}&goal_name=${goal.goal_name}&goal_times=${goal.times}`
+				const left_days = dayjs(goal.end_time).diff(goal.start_time, 'd') - goal.times
+				const p = querystring.stringify({
+					id: goal._id,
+					goal_name: goal.goal_name,
+					goal_times: goal.times,
+					update_time: goal.update_time,
+					left_days
 				})
+				if(left_days > 0) {
+					uni.navigateTo({
+						url: '../add-record/add-record?' + p
+					})
+				} else {
+					uni.showToast({
+						icon: 'none',
+						position: 'bottom',
+						title: '目标已完成'
+					})
+				}
 			},
 			onIconClick() {
 				uni.navigateTo({
 					url: '../create-goal/create-goal'
 				})
 			},
-			editGoal() {},
+			toReportChart() {
+				// console.log('toReportChart', this.c_goals)
+				// const p = querystring.stringify(this.c_goals)
+				// console.log('pp', p)
+				uni.navigateTo({
+					url: '../report-chart/report-chart?goals=' + JSON.stringify(this.c_goals)
+				})
+			},
 			removeGoal(id, goal_name) {
 				const that = this
 				uni.showModal({
@@ -140,7 +197,33 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
+	.statBar {
+		margin-top: 10px;
+		font-size: 0.8em;
+		z-index: 1;
+		padding: 0px 20px;
+		// background-color: red;
+		display: flex;
+		opacity: 0.4;
+	}
+	.statInfo {
+		flex: 1;
+	}
+	.tabGroup {
+		text-align: center;
+	}
+	.tab_button {
+		margin-top: 10px;
+		display: inline-block;
+		padding: 10px 20px;
+		color: $uni-text-color;
+	}
+	.active {
+		/* background-color: blue; */
+		color: $uni-color-primary;
+		border-bottom: 2px solid $uni-color-primary;
+	}
 	.goal {
 		width: 100%;
 		margin: 10px;
@@ -164,7 +247,7 @@
 		height: 1px;
 	}
 	.goal__goalName {
-		line-height: 51px;
+		// line-height: 51px;
 		vertical-align: baseline;
 		flex: 1;
 	}
@@ -179,7 +262,16 @@
 		background-color: #3F536E;
 		color: #FFFFFF;
 		padding: 4px 12px;
-		border-radius: 4px;
+		border-radius: $uni-border-radius-base;
+	}
+	.goal__finishIcon {
+		background-color: $uni-color-warning;
+		border-radius: $uni-border-radius-base;
+		color: white;
+		padding: 6px 12px;
+	}
+	.goal__disabled {
+		color: $uni-text-color-disable;
 	}
 	.swipeActionItem__rightOption {
 		display: flex;
@@ -188,7 +280,8 @@
 	}
 	.swipeActionItem__rightOption-btn {
 		padding: 0px 30px;
-		margin: 10px 0px;
+		margin: 10px 20px 10px 0px;
+		// margin-right: 20px;
 		vertical-align: center;
 		line-height: 75px;
 	}

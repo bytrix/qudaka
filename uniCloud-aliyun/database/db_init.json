@@ -9,19 +9,20 @@
 				"password": "123",
 				"phone": "13358212686",
 				"gender": "女",
-				"avatar": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201901%2F17%2F20190117092809_ffwKZ.thumb.700_0.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615284803&t=b0a71e7eef744aa0a616e52ec54f1ba6"
+				"avatar": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201901%2F17%2F20190117092809_ffwKZ.thumb.700_0.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615284803&t=b0a71e7eef744aa0a616e52ec54f1ba6",
+				"follower_id": []
 			}
 		]
 	},
-	"follower": {
-		"data": [
-			{
-				"follower_id": "1",
-				"user_id": "2",
-				"create_time": ""
-			}
-		]
-	},
+	// "follower": {
+	// 	"data": [
+	// 		{
+	// 			"follower_id": "1",
+	// 			"user_id": "2",
+	// 			"create_time": ""
+	// 		}
+	// 	]
+	// },
 	"goal": {
 		"data": [
 			{
@@ -31,6 +32,7 @@
 				"start_time": "2021-02-07",
 				"end_time": "2021-02-13",
 				"create_by": "1",
+				"update_time": "2021-02-14",
 				"timestamp": 0,
 				"times": 0
 			}

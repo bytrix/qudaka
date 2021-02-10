@@ -41,14 +41,19 @@
 		box-sizing: border-box;
 		left: 0px;
 		background-color: white;
+		// background-color: red;
 		min-height: $uni-header-height;
-		padding: 24rpx;
+		vertical-align: bottom;
+		padding: 30px 15px 15px 15px;
 		font-weight: bold;
 		text-align: center;
 		display: flex;
+		z-index: 1;
+		// opacity: 0.4;
 	}
 	.header__after {
-		min-height: $uni-header-height;
+		min-height: $uni-header-height + 7px;
+		// background-color: blue;
 	}
 	.header__title {
 		flex: 1;

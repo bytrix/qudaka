@@ -1,13 +1,17 @@
 <template>
 	<view>
+		<uni-header showBackIcon leftIcon='plus'>{{goal.name}}</uni-header>
+		<view class="encourageWords">
+			<text v-if="now === goal.update_time">今天已经打过卡了</text>
+			<text v-else>再坚持{{goal.left_days}}天，加油哦～</text>
+		</view>
 		<form @submit="addRecord">
-			<uni-header showBackIcon leftIcon='plus'>{{goal.name}}</uni-header>
 			<image-uploader
 				:imageList="imageList"
 				@onImageUpload="onImageUpload"
 			/>
 			<textarea name='text' class="textarea" placeholder="写下你的打卡宣言"></textarea>
-			<button type="primary" class="submitBtn" form-type="submit">打卡</button>
+			<button :disabled="now === goal.update_time" type="primary" class="submitBtn" form-type="submit">打卡</button>
 		</form>
 	</view>
 </template>
@@ -30,11 +34,18 @@
 				}
 			}
 		},
+		computed: {
+			now() {
+				return dayjs().format('YYYY-MM-DD')
+			}
+		},
 		onLoad(p) {
 			this.goal = {
-				id: p.goal_id,
+				id: p.id,
 				name: p.goal_name,
-				times: parseInt(p.goal_times)
+				times: parseInt(p.goal_times),
+				left_days: p.left_days,
+				update_time: p.update_time
 			}
 		},
 		methods: {
@@ -79,7 +90,8 @@
 						name: 'update_goal',
 						data: {
 							goal_id: this.goal.id,
-							times: this.goal.times + 1
+							times: this.goal.times + 1,
+							update_time: dayjs().format('YYYY-MM-DD')
 						}
 					})
 				})
@@ -104,6 +116,11 @@
 
 <style lang="scss">
 	page {
+		padding: $page-padding;
+	}
+	.encourageWords {
+		color: $uni-text-color;
+		text-align: center;
 		padding: $page-padding;
 	}
 	.submitBtn {
