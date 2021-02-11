@@ -48,7 +48,7 @@
 						phone: phone,
 						password: md5(password),
 						username: randomUsername(),
-						avatar: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201901%2F17%2F20190117092809_ffwKZ.thumb.700_0.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615175158&t=d581084da521f3bf473d2bbb419abe07'
+						avatar: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615598582&t=869999991b8ff2677d3020f320fda1b4'
 					}
 				}).then(({ result }) => {
 					console.log('result', result)
@@ -62,7 +62,8 @@
 						gender: result.gender,
 						location: result.location,
 						birthday: result.birthday,
-						signature: result.signature
+						signature: result.signature,
+						friend_id: result.friend_id.join(',')
 					}).catch(e => {
 						console.error('本地存储用户失败', e)
 						if(e.code === -1404) {

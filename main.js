@@ -3,7 +3,7 @@ import App from './App'
 import store from './store/index.js'
 
 Vue.prototype.$store = store
-Vue.prototype.$headerHeight = 46
+Vue.prototype.$headerHeight = 116
 Vue.config.productionTip = false
 
 App.mpType = 'app'

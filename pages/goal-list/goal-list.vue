@@ -72,7 +72,7 @@
 			})
 		},
 		onLoad() {
-			this.getGoals()
+			this.getGoals(true)
 		},
 		onShow() {
 			this.getGoals()
@@ -109,14 +109,12 @@
 			onTabChange(key) {
 				this.tabIndex = key
 			},
-			getGoals() {
-				// uni.showToast({
-				// 	icon: 'none',
-				// 	title: 'user:'+JSON.stringify(this.$store.state.user)
-				// })
+			getGoals(loading = false) {
 				console.log('local user', this.$store.state.user)
 				if(this.$store.state.user) {
-					// uni.showLoading()
+					if(loading) {
+						uni.showLoading()
+					}
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {

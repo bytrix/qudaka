@@ -12,7 +12,7 @@
 					<view class="followBtn">关注</view>
 				</view>
 			</view> -->
-			<record-card v-if="record" :record="record"></record-card>
+			<record-card v-if="record" :record="record" :link="false"></record-card>
 		</flex-scroll-view>
 	</view>
 </template>
@@ -26,18 +26,13 @@
 			};
 		},
 		onLoad({ record_id }) {
-			console.log('onload', record_id)
-			const db = uniCloud.database()
-			db.collection('record,user')
-				.doc(record_id)
-				.field('user_id{avatar,username,signature},text,goal,images')
-				.get()
-				.then(({ result }) => {
-					// console.log('record...', result.data)
-					this.record = result.data[0]
-					console.log('this.record', this.record)
-				})
-		}
+			console.log('on Load', record_id)
+			this.getData(record_id, true)
+		},
+		// onShow({ record_id }) {
+		// 	console.log('on show', record_id)
+		// 	this.getData(record_id)
+		// },
 		// onLoad({ text, goal_name, avatar, username, create_time, images }) {
 		// 	this.record = {
 		// 		text,
@@ -52,6 +47,25 @@
 		// 		username
 		// 	}
 		// }
+		methods: {
+			getData(record_id, loading = false) {
+				console.log('onload', record_id)
+				if(loading) {
+					uni.showLoading()
+				}
+				const db = uniCloud.database()
+				db.collection('record,user')
+					.doc(record_id)
+					.field('user_id{avatar,username,signature},text,goal,images')
+					.get()
+					.then(({ result }) => {
+						// console.log('record...', result.data)
+						this.record = result.data[0]
+						console.log('this.record', this.record)
+						uni.hideLoading()
+					})
+			}
+		}
 	}
 </script>
 

@@ -49,6 +49,10 @@ export default {
 				{
 					field: 'signature',
 					type: 'text'
+				},
+				{
+					field: 'friend_id',
+					type: 'text'
 				}
 			])
 		})
@@ -63,7 +67,8 @@ export default {
 	update(newValues, whereCondition) {
 		console.log('update....', newValues, whereCondition)
 		return db.open()
-		.then(() => {
+		.then((hh) => {
+			console.log('hh', hh)
 			return db.update(newValues, whereCondition)
 		})
 	},

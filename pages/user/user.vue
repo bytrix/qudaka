@@ -8,8 +8,13 @@
 					<view>{{user.username}}</view>
 					<view class="banner__text__signature">{{user.signature}}</view>
 				</view>
-				<view @click="follow" style="height: 64px; line-height: 64px;">
-					<view class="followBtn">关注</view>
+				<view v-if="!isUserSelf">
+					<view v-if="followed" @click="unfollow" style="height: 64px; line-height: 64px;">
+						<view class="followBtn">取消关注</view>
+					</view>
+					<view v-else @click="follow" style="height: 64px; line-height: 64px;">
+						<view class="followBtn">关注</view>
+					</view>
 				</view>
 			</view>
 			<my-record-card v-for="record in records" :record="record"></my-record-card>
@@ -23,7 +28,8 @@
 		data() {
 			return {
 				user: null,
-				records: []
+				records: [],
+				followed: false
 				// user: {
 				// 	"id": "1",
 				// 	"phone": "13358212686",
@@ -37,9 +43,29 @@
 
 			};
 		},
+		computed:{
+			isUserSelf() {
+				if(!this.$store.state.user) {
+					return false
+				}
+				if(this.user._id === this.$store.state.user.id) {
+					return true
+				}
+			}
+		},
 		onLoad(user) {
 			this.user = user
-			console.log('user', this.user)
+			model.user.get().then(u => {
+				console.log('local user', u)
+				console.log('当前页面的用户', this.user)
+				const friend_id = u.friend_id.split(',')
+				console.log('登陆用户的好友', friend_id)
+				if(friend_id.indexOf(this.user._id) !== -1) {
+					console.log('当前页面用户是您的好友')
+					this.followed = true
+				}
+			})
+			// console.log('user', this.user)
 			const db = uniCloud.database()
 			db.collection('record')
 				.where({
@@ -74,10 +100,18 @@
 						console.log('ok??')
 						model.user.get().then(u => {
 							console.log('before commit', this)
+							console.log('result', result)
+							console.log('u', u)
 							that.$store.commit('user', {
 								...u,
 								friend_id: result
 							})
+							return model.user.update({
+								friend_id: result.join(',')
+							}, {
+								id: u.id
+							})
+						}).then(() => {
 							console.log('after commit')
 							uni.showToast({
 								icon: 'none',
@@ -85,8 +119,43 @@
 								title: '关注成功'
 							})
 							console.log('关注成功!!', result)
+							that.followed = true
 						})
 					}
+				})
+			},
+			unfollow() {
+				console.log('unfollow...')
+				const that = this
+				const current_user = this.$store.state.user
+				uniCloud.callFunction({
+					name: 'unfollow',
+					data: {
+						user_id: current_user.id,
+						friend_id: this.user._id
+					}
+				}).then(({ result }) => {
+					console.log('取消关注成功', result)
+					model.user.get().then(u => {
+						console.log(11111, u)
+						that.$store.commit('user', {
+							...u,
+							friend_id: result.join(',')
+						})
+						return model.user.update({
+							friend_id: result.join(',')
+						}, {
+							id: u.id
+						})
+					}).then(() => {
+						console.log(22222)
+						that.followed = false
+						uni.showToast({
+							icon: 'none',
+							position: 'bottom',
+							title: '取消关注'
+						})
+					})
 				})
 			}
 		}

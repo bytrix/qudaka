@@ -8,8 +8,10 @@
 					{{record.goal.goal_name}}，已坚持{{record.goal.times}}天
 				</view>
 			</view>
+			<!-- {{isMyFriend(record.user_id[0]._id)}} -->
 			<view v-if="!isUserSelf">
-				<view class="record__header__followBtn">关注TA</view>
+				<view v-if="isMyFriend(record.user_id[0]._id)" class="record__header__followBtn">取消关注</view>
+				<view v-else class="record__header__followBtn">关注TA</view>
 			</view>
 		</view>
 		<view class="record__text">{{record.text}}</view>
@@ -28,10 +30,17 @@
 	import { cutAny } from '../../utils/utils.js'
 	const cut3 = cutAny(3)
 	export default {
+		// watch: {
+		// 	// link: function(a, b) {
+		// 	// 	console.log('watch link', a, b)
+		// 	// 	this.link = a
+		// 	// }
+		// 	// link(n, o) {
+		// 	// 	console.log('get link')
+		// 	// }
+		// },
 		data() {
-			return {
-				
-			};
+			return {}
 		},
 		computed: {
 			isUserSelf() {
@@ -40,6 +49,26 @@
 				}
 				if(this.record.user_id[0]._id === this.$store.state.user.id) {
 					return true
+				}
+			},
+			isMyFriend() {
+				// if(!this.$store.state.user) {
+				// 	return false
+				// }
+				// if(this.$store.state.user.friend_id)
+				const that = this
+				return function(user_id) {
+					if(!that.$store.state.user) {
+						return false
+					}
+					console.log('user_id', user_id)
+					// return this.$store.state.user.friend_id
+					console.log('that.$store.state.user.friend_id', that.$store.state.user.friend_id)
+					let friend_id = that.$store.state.user.friend_id.split(',')
+					if(friend_id.indexOf(user_id) !== -1) {
+						return true
+					}
+					return false
 				}
 			}
 		},
@@ -56,7 +85,9 @@
 				})
 			},
 			toRecord() {
-				console.log('to record', this.record)
+				if(this.link === false) {
+					return
+				}
 				const user = this.record.user_id[0]
 				// const p = querystring.stringify({
 				// 	text: this.record.text,
@@ -74,14 +105,14 @@
 				})
 			}
 		},
-		props: ['record', 'user']
+		props: ['record', 'user', 'link']
 	}
 </script>
 
 <style lang="scss">
 	.record__card {
 		width: 100%;
-		margin: 15px 0px;
+		// margin: 15px 0px;
 		padding: 25px 20px 15px 20px;
 		box-sizing: border-box;
 		background-color: #FFFFFF;

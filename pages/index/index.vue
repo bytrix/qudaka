@@ -16,20 +16,11 @@
 		data() {
 			return {
 				records: [],
+				triggered: false
 			}
 		},
 		onLoad() {
-			uni.showLoading()
-			const db = uniCloud.database()
-			db.collection('record,user')
-				.field('user_id{username,avatar,signature},text,images,goal,create_time')
-				.orderBy('create_time', 'desc')
-				.get()
-				.then(({ result }) => {
-					console.log('result', result.data)
-					this.records = result.data
-					uni.hideLoading()
-				})
+			this.getData()
 			// uniCloud.callFunction({
 			// 	name: 'get_records'
 			// }).then(({ result }) => {
@@ -38,7 +29,19 @@
 			// })
 		},
 		methods: {
-
+			getData() {
+				uni.showLoading()
+				const db = uniCloud.database()
+				return db.collection('record,user')
+					.field('user_id{username,avatar,signature},text,images,goal,create_time')
+					.orderBy('create_time', 'desc')
+					.get()
+					.then(({ result }) => {
+						console.log('result', result.data)
+						this.records = result.data
+						uni.hideLoading()
+					})
+			}
 		}
 	}
 </script>

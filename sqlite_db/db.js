@@ -114,6 +114,7 @@ export default {
 		newFields = Object.entries(newFields).map(([k, v]) => {
 			return `${k}="${v}"`
 		}).join(', ')
+		// console.log('newFields', newFields)
 		whereCondition = Object.entries(whereCondition).map(([k, v]) => {
 			return `${k}="${v}"`
 		}).join(', ')
