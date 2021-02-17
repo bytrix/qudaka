@@ -8,15 +8,15 @@
 
 <script>
 	export default {
-		props: ['refresher-triggered'],
+		// props: ['refresher-triggered'],
 		data() {
 			return {
 			};
 		},
 		methods: {
-			handleRefresh() {
-				this.$emit('refresherrefresh')
-			}
+			// handleRefresh() {
+			// 	this.$emit('refresherrefresh')
+			// }
 		}
 	}
 </script>

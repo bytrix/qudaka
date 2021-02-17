@@ -7,6 +7,9 @@ const store = new Vuex.Store({
 	mutations:{
 		user(state, payload) {
 			state.user = _.assign(state.user, payload)
+		},
+		scrollHeight(state, payload) {
+			state.scrollHeight = payload
 		}
 	},
 	state:{

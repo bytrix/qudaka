@@ -8,6 +8,17 @@
 		},
 		onLaunch: function() {
 			console.log('App Launch')
+			const self = this
+			uni.getSystemInfo({
+				success(res) {
+					const scrollHeight = res.windowHeight - self.$headerHeight
+					// const scrollHeight = res.windowHeight
+					console.log('getSystemInfo', res.windowHeight, self.$headerHeight)
+					// self.$store.state.scrollHeight = scrollHeight
+					self.$store.commit('scrollHeight', scrollHeight)
+				}
+			})
+			
 			// #ifdef APP-PLUS
 			// plus.navigator.setFullscreen(true)
 			if(this.$store.state.user) {
@@ -25,14 +36,16 @@
 		},
 		onShow: function() {
 			console.log('App Show')
-			const self = this
-			uni.getSystemInfo({
-				success(res) {
-					const scrollHeight = res.windowHeight - self.$headerHeight
-					console.log('getSystemInfo', res.windowHeight, self.$headerHeight)
-					self.$store.state.scrollHeight = scrollHeight
-				}
-			})
+			// const self = this
+			// uni.getSystemInfo({
+			// 	success(res) {
+			// 		// const scrollHeight = res.windowHeight - self.$headerHeight
+			// 		const scrollHeight = res.windowHeight
+			// 		console.log('getSystemInfo', res.windowHeight, self.$headerHeight)
+			// 		self.$store.state.scrollHeight = scrollHeight
+			// 		// self.$store.commit('scrollHeight', scrollHeight)
+			// 	}
+			// })
 		},
 		onHide: function() {
 			console.log('App Hide')

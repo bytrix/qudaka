@@ -18,9 +18,9 @@
 		<view class="record__imageGroup" v-if="record.images.length !== 0">
 			<image mode="aspectFill" v-for="image in cut3images(record.images)" class="image" :src="image"></image>
 		</view>
-		<view class="thumbBtn">
+		<view class="thumbBtn" @click.stop="thumbUp(record._id)">
 			<uni-icons class="thumbBtn__icon" type="hand-thumbsup"></uni-icons>
-			<text class="thumbBtn__text">37</text>
+			<text class="thumbBtn__text">{{record.thumb_up_count}}</text>
 		</view>
 	</view>
 </template>
@@ -103,6 +103,21 @@
 				uni.navigateTo({
 					url: '../../pages/record/record?' + p
 				})
+			},
+			thumbUp(record_id) {
+				console.log('点赞', record_id, this.$store.state)
+				uniCloud.callFunction({
+					name: 'thumb_up',
+					data: {
+						record_id,
+						user_id: this.$store.state.user.id
+					}
+				}).then(({ result }) => {
+					console.log('点赞成功', result, this.record)
+					this.record.thumb_up_count = this.record.thumb_up_count + 1
+				}).catch(e => {
+					console.log('取消点赞', e)
+				})
 			}
 		},
 		props: ['record', 'user', 'link']
@@ -113,6 +128,7 @@
 	.record__card {
 		width: 100%;
 		// margin: 15px 0px;
+		margin-bottom: 2px;
 		padding: 25px 20px 15px 20px;
 		box-sizing: border-box;
 		background-color: #FFFFFF;
@@ -159,8 +175,10 @@
 		margin-top: 0.15em;
 	}
 	.thumbBtn {
-		// color: red;
+		// background-color: red;
 		opacity: 0.4;
+		display: inline-block;
+		padding: 15rpx 25rpx;
 	}
 	.thumbBtn > .thumbBtn__icon {
 		margin-right: 6px;

@@ -98,7 +98,7 @@
 			c_goals() {
 				return this.goals.map(_ => ({
 					..._,
-					diff: dayjs(_.end_time).diff(_.start_time, 'd')
+					diff: dayjs(_.end_time).diff(_.start_time, 'd') + 1
 				}))
 			},
 			user() {
@@ -130,7 +130,8 @@
 				}
 			},
 			addRecord(goal) {
-				const left_days = dayjs(goal.end_time).diff(goal.start_time, 'd') - goal.times
+				// const left_days = dayjs(goal.end_time).diff(goal.start_time, 'd') - goal.times
+				const left_days = goal.diff - goal.times
 				const p = querystring.stringify({
 					id: goal._id,
 					goal_name: goal.goal_name,

@@ -10,7 +10,8 @@
 				"phone": "13358212686",
 				"gender": "女",
 				"avatar": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201901%2F17%2F20190117092809_ffwKZ.thumb.700_0.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615284803&t=b0a71e7eef744aa0a616e52ec54f1ba6",
-				"friend_id": []
+				"friend_id": [],
+				"signature": ""
 			}
 		]
 	},
@@ -46,6 +47,7 @@
 					"https://ci.xiaohongshu.com/89f02c51-5fd5-c6fb-a944-c4cb2f451ec0?imageView2/2/w/1080/format/jpg",
 					"https://ci.xiaohongshu.com/572d7d31-ae2d-d4d5-8893-9c33a8c10ef8?imageView2/2/w/1080/format/jpg"
 				],
+				"thumb_up_count": 0,
 				"goal": {
 					"goal_name": "健身打卡",
 					"time": 1
@@ -57,6 +59,32 @@
 				"user_id": "1",
 				"create_time": "2020-10-10 10:10:10",
 				"times": 1
+			}
+		]
+	},
+	"_thumb_up__record__user": {
+		"data": [
+			{
+				"record_id": "2",
+				"user_id": "11"
+			}
+		],
+		"index": [
+			{
+				"IndexName": "user_record_",
+				"MgoKeySchema": {
+					"MgoIndexKeys": [
+						{
+							"Name": "user_id",
+							"Direction": "1"
+						},
+						{
+							"Name": "record_id",
+							"Direction": "1"
+						}
+					],
+					"MgoIsUnique": true
+				}
 			}
 		]
 	}

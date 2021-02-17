@@ -7,14 +7,20 @@
 			</view>
 			<view class="ganttLine__taskStatus">
 				<text v-if="goal.times === 0">未开始</text>
-				<text v-else-if="goal.times !== 0 && goal.times < goal.total_days">进行中</text>
-				<text v-else-if="goal.passed_days > goal.total_days">已逾期</text>
+				<text v-else-if="goal.times !== 0 && goal.times < goal.total_days && goal.passed_days < goal.total_days" style="color: #007AFF;">进行中</text>
+				<text v-else-if="goal.passed_days > goal.total_days" style="color: #FF5A5F;">已逾期</text>
 				<text v-else>未知</text>
 			</view>
 			<view style="flex: 1; padding: 5px;">
-				<view class="ganttLine__taskTimeline--total" :style="{width: 350 * (goal.total_days / max_days) + 'rpx'}">
-					<view class="ganttLine__taskTimeline--passDays" :style="{width: 350 * (goal.passed_days / max_days) + 'rpx'}" >
-						<view class="ganttLine__taskTimeline--current" :style="{width: 350 * (goal.times / max_days) + 'rpx'}"></view>
+				<view class="ganttLine__taskTimeline--total" :style="{width: 350 * (goal.total_days / max_days) + 8 + 'rpx'}">
+					<view
+						class="ganttLine__taskTimeline--passDays"
+						:style="{
+							width: 350 * (goal.passed_days < max_days ? goal.passed_days / max_days : goal.total_days / max_days) + 'rpx',
+						}" >
+						<view
+							class="ganttLine__taskTimeline--current"
+							:style="{width: 350 * (goal.times < max_days ? goal.times / max_days : 1) + 'rpx'}"></view>
 					</view>
 				</view>
 				<view class="ganttLine__taskTimeline--percent">
@@ -32,14 +38,14 @@
 		data() {
 			return {
 				goals: [],
-				max_days: 0,
+				max_days: 0, // 所有目标的最长周期，用于整体样式排版
 			}
 		},
 		onLoad({goals}) {
 			const _goals = JSON.parse(goals)
 			const that = this
 			this.goals = _goals.map(_ => {
-				const total_days =  dayjs(_.end_time).diff(_.start_time, 'd')
+				const total_days =  dayjs(_.end_time).diff(_.start_time, 'd') + 1
 				const passed_days = dayjs().diff(_.start_time, 'd') + 1
 				that.max_days = Math.max(that.max_days, total_days)
 				return {
@@ -48,6 +54,7 @@
 					passed_days
 				}
 			})
+			console.log('this.goals', this.goals)
 			// this.goals = [
 			// 	{
 			// 		goal_name: 'aa',
@@ -96,20 +103,29 @@ page {
 		vertical-align: 0.4em;
 		// height: 10px;
 		// width: 10px;
+		box-sizing: content-box;
 	}
 	.ganttLine__taskTimeline--total {
 		display: inline-block;
 		background-color: rgba(0,0,0,0.05);
 		padding: 4px;
 		border-radius: 8px;
+		box-sizing: content-box;
+		// box-sizing: border-box;
 	}
 	.ganttLine__taskTimeline--passDays {
-		background-color: rgba($uni-color-primary, 0.4);
+		background-color: rgba($uni-color-primary, 0.2);
 		// box-sizing: border-box;
 		box-sizing: content-box;
 		border-radius: 4px;
 		padding: 2px;
 	}
+	// .ganttLine__taskTimeline--passDays--default {
+	// 	background-color: rgba($uni-color-primary, 0.4);
+	// }
+	// .ganttLine__taskTimeline--passDays--error {
+	// 	background-color: rgba($uni-color-error, 0.4);
+	// }
 	.ganttLine__taskTimeline--current {
 		box-sizing: border-box;
 		height: 4px;

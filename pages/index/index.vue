@@ -3,6 +3,7 @@
 		<uni-header rightIcon='search'>趣打卡</uni-header>
 		<flex-scroll-view>
 			<record-card v-for="record in records" :record="record"></record-card>
+			<view style="text-align: center; color: #cccccc; margin: 36rpx;">我是有底线的～</view>
 		</flex-scroll-view>
 	</view>
 </template>
@@ -30,10 +31,22 @@
 		},
 		methods: {
 			getData() {
-				uni.showLoading()
+				// uni.showLoading();
+				// (async () => {
+				// 	const db = await uniCloud.database()
+				// 	console.log(777)
+				// 	const res = await db.collection('record').aggregate().lookup({
+				// 		from: '_thumb_up__record__user',
+				// 		localField: '_id',
+				// 		foreignField: 'record_id',
+				// 		as: 'thumb_users'
+				// 	}).end()
+				// 	// const res = await db.collection('record').aggregate().get()
+				// 	console.log('res', res)
+				// })()
 				const db = uniCloud.database()
-				return db.collection('record,user')
-					.field('user_id{username,avatar,signature},text,images,goal,create_time')
+				db.collection('record,user,_thumb_up__record__user')
+					.field('user_id{username,avatar,signature},text,images,goal,thumb_up_count,create_time')
 					.orderBy('create_time', 'desc')
 					.get()
 					.then(({ result }) => {

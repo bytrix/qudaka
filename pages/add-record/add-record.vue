@@ -2,7 +2,8 @@
 	<view>
 		<uni-header showBackIcon leftIcon='plus'>{{goal.name}}</uni-header>
 		<view class="encourageWords">
-			<text v-if="now === goal.update_time">今天已经打过卡了</text>
+			<text v-if="goal.times === 0">坚持就是胜利！</text>
+			<text v-else-if="goal.times !== 0 && now === goal.update_time">今天已经打过卡了</text>
 			<text v-else>再坚持{{goal.left_days}}天，加油哦～</text>
 		</view>
 		<form @submit="addRecord">
@@ -47,6 +48,7 @@
 				left_days: p.left_days,
 				update_time: p.update_time
 			}
+			console.log('this.goal', this.goal)
 		},
 		methods: {
 			addRecord(formData) {

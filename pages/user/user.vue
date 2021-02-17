@@ -13,7 +13,11 @@
 						<view class="followBtn">取消关注</view>
 					</view>
 					<view v-else @click="follow" style="height: 64px; line-height: 64px;">
-						<view class="followBtn">关注</view>
+						<view class="followBtn">
+							<uni-icons type="plusempty" color="#007aff"></uni-icons>
+							<!-- <uni-icons type="spinner-cycle"></uni-icons> -->
+							关注
+						</view>
 					</view>
 				</view>
 			</view>
@@ -90,6 +94,7 @@
 					})
 					return
 				}
+				that.followed = true
 				uniCloud.callFunction({
 					name: 'follow',
 					data: {
@@ -119,7 +124,6 @@
 								title: '关注成功'
 							})
 							console.log('关注成功!!', result)
-							that.followed = true
 						})
 					}
 				})
@@ -128,34 +132,41 @@
 				console.log('unfollow...')
 				const that = this
 				const current_user = this.$store.state.user
-				uniCloud.callFunction({
-					name: 'unfollow',
-					data: {
-						user_id: current_user.id,
-						friend_id: this.user._id
+				uni.showModal({
+					title: '确定取消关注？',
+					success({ confirm, cancel }) {
+						if(confirm) {
+							that.followed = false
+							uniCloud.callFunction({
+								name: 'unfollow',
+								data: {
+									user_id: current_user.id,
+									friend_id: that.user._id
+								}
+							}).then(({ result }) => {
+								console.log('取消关注成功', result)
+								model.user.get().then(u => {
+									console.log(11111, u)
+									that.$store.commit('user', {
+										...u,
+										friend_id: result.join(',')
+									})
+									return model.user.update({
+										friend_id: result.join(',')
+									}, {
+										id: u.id
+									})
+								}).then(() => {
+									console.log(22222)
+									uni.showToast({
+										icon: 'none',
+										position: 'bottom',
+										title: '取消关注'
+									})
+								})
+							})
+						}
 					}
-				}).then(({ result }) => {
-					console.log('取消关注成功', result)
-					model.user.get().then(u => {
-						console.log(11111, u)
-						that.$store.commit('user', {
-							...u,
-							friend_id: result.join(',')
-						})
-						return model.user.update({
-							friend_id: result.join(',')
-						}, {
-							id: u.id
-						})
-					}).then(() => {
-						console.log(22222)
-						that.followed = false
-						uni.showToast({
-							icon: 'none',
-							position: 'bottom',
-							title: '取消关注'
-						})
-					})
 				})
 			}
 		}

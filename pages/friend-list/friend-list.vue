@@ -1,6 +1,9 @@
 <template>
 	<view>
 		<uni-header>好友</uni-header>
+		<view style="color: #ccc; text-align: center; padding: 24rpx;" v-if="friends.length === 0">
+			暂无任何好友
+		</view>
 		<uni-list-chat
 			v-for="friend in friends"
 			:avatar="friend.avatar"
