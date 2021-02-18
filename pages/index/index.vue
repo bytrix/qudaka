@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<uni-header rightIcon='search'>趣打卡</uni-header>
+		<uni-header rightIcon='search' @onIconClick="toSearch">趣打卡</uni-header>
 		<flex-scroll-view>
 			<record-card v-for="record in records" :record="record"></record-card>
 			<view style="text-align: center; color: #cccccc; margin: 36rpx;">我是有底线的～</view>
@@ -10,6 +10,13 @@
 
 <script>
 	import FlexScrollView from '../../components/flex-scroll-view/flex-scroll-view.vue'
+	import dayjs from 'dayjs'
+	import relativeTime from 'dayjs/plugin/relativeTime'
+	import 'dayjs/locale/zh-cn'
+	
+	dayjs.extend(relativeTime)
+	dayjs.locale('zh-cn')
+	
 	export default {
 		components: {
 			FlexScrollView
@@ -31,29 +38,30 @@
 		},
 		methods: {
 			getData() {
-				// uni.showLoading();
-				// (async () => {
-				// 	const db = await uniCloud.database()
-				// 	console.log(777)
-				// 	const res = await db.collection('record').aggregate().lookup({
-				// 		from: '_thumb_up__record__user',
-				// 		localField: '_id',
-				// 		foreignField: 'record_id',
-				// 		as: 'thumb_users'
-				// 	}).end()
-				// 	// const res = await db.collection('record').aggregate().get()
-				// 	console.log('res', res)
-				// })()
+				uni.showLoading();
 				const db = uniCloud.database()
-				db.collection('record,user,_thumb_up__record__user')
-					.field('user_id{username,avatar,signature},text,images,goal,thumb_up_count,create_time')
+				const that = this
+				db.collection('record,user')
+					.field('user_id{username,avatar,signature},text,images,goal,create_time,thumb_up_users')
 					.orderBy('create_time', 'desc')
 					.get()
 					.then(({ result }) => {
-						console.log('result', result.data)
-						this.records = result.data
+						console.log('result', result.data, dayjs)
+						that.records = result.data.map(_ => ({
+							..._,
+							thumb_up_by_me: _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1,
+							fromNow: dayjs(_.create_time).fromNow()
+						}))
+						console.log('that.records', that.records)
 						uni.hideLoading()
 					})
+			},
+			toSearch() {
+				console.log('to search.', this.$refs.popup.type)
+				// uni.navigateTo({
+				// 	url: '../search/search'
+				// })
+				this.$refs.popup.open()
 			}
 		}
 	}

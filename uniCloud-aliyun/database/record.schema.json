@@ -23,11 +23,8 @@
 		"text": {
 			"bsonType": "string"
 		},
-		"thumb_up_count": {
-			"bsonType": "int"
-		},
-		"thumb_up_user_id": {
-			"foreignKey":"__thumb_up_record_user.user_id"
+		"thumb_up_users": {
+			"bsonType":"array"
 		}
 	}
 }

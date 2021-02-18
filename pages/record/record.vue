@@ -18,6 +18,13 @@
 </template>
 
 <script>
+	import dayjs from 'dayjs'
+	import relativeTime from 'dayjs/plugin/relativeTime'
+	import 'dayjs/locale/zh-cn'
+	
+	dayjs.extend(relativeTime)
+	dayjs.locale('zh-cn')
+	
 	export default {
 		data() {
 			return {
@@ -50,17 +57,20 @@
 		methods: {
 			getData(record_id, loading = false) {
 				console.log('onload', record_id)
+				const that = this
 				if(loading) {
 					uni.showLoading()
 				}
 				const db = uniCloud.database()
 				db.collection('record,user')
 					.doc(record_id)
-					.field('user_id{avatar,username,signature},text,goal,images')
+					.field('user_id{avatar,username,signature},text,goal,images,thumb_up_users,create_time')
 					.get()
 					.then(({ result }) => {
-						// console.log('record...', result.data)
+						console.log('record...', result.data)
 						this.record = result.data[0]
+						this.record.thumb_up_by_me = this.record.thumb_up_users.indexOf(that.$store.state.user.id) !== -1
+						this.record.fromNow = dayjs(this.record.create_time).fromNow()
 						console.log('this.record', this.record)
 						uni.hideLoading()
 					})

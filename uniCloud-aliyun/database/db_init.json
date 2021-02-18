@@ -47,10 +47,11 @@
 					"https://ci.xiaohongshu.com/89f02c51-5fd5-c6fb-a944-c4cb2f451ec0?imageView2/2/w/1080/format/jpg",
 					"https://ci.xiaohongshu.com/572d7d31-ae2d-d4d5-8893-9c33a8c10ef8?imageView2/2/w/1080/format/jpg"
 				],
-				"thumb_up_count": 0,
+				// "thumb_up_count": 0,
+				"thumb_up_users": [],
 				"goal": {
 					"goal_name": "健身打卡",
-					"time": 1
+					"times": 1
 				},
 				// "user": {
 				// 	"username": "王敢敢噗💨",
@@ -61,31 +62,31 @@
 				"times": 1
 			}
 		]
-	},
-	"_thumb_up__record__user": {
-		"data": [
-			{
-				"record_id": "2",
-				"user_id": "11"
-			}
-		],
-		"index": [
-			{
-				"IndexName": "user_record_",
-				"MgoKeySchema": {
-					"MgoIndexKeys": [
-						{
-							"Name": "user_id",
-							"Direction": "1"
-						},
-						{
-							"Name": "record_id",
-							"Direction": "1"
-						}
-					],
-					"MgoIsUnique": true
-				}
-			}
-		]
 	}
+	// "_thumb_up__record__user": {
+	// 	"data": [
+	// 		{
+	// 			"record_id": "2",
+	// 			"user_id": "11"
+	// 		}
+	// 	],
+	// 	"index": [
+	// 		{
+	// 			"IndexName": "user_record_",
+	// 			"MgoKeySchema": {
+	// 				"MgoIndexKeys": [
+	// 					{
+	// 						"Name": "user_id",
+	// 						"Direction": "1"
+	// 					},
+	// 					{
+	// 						"Name": "record_id",
+	// 						"Direction": "1"
+	// 					}
+	// 				],
+	// 				"MgoIsUnique": true
+	// 			}
+	// 		}
+	// 	]
+	// }
 }

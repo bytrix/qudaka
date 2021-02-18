@@ -19,15 +19,24 @@
 			<image mode="aspectFill" v-for="image in cut3images(record.images)" class="image" :src="image"></image>
 		</view>
 		<view class="thumbBtn" @click.stop="thumbUp(record._id)">
-			<uni-icons class="thumbBtn__icon" type="hand-thumbsup"></uni-icons>
-			<text class="thumbBtn__text">{{record.thumb_up_count}}</text>
+			<uni-icons
+				class="thumbBtn__icon"
+				type="hand-thumbsup"
+				:color="record.thumb_up_by_me ? 'red' : ''">
+			</uni-icons>
+			<text
+				:class="['thumbBtn__text', {'thumbBtn__text--active': record.thumb_up_by_me}]">
+				{{record.thumb_up_users.length}}
+			</text>
 		</view>
+		<view class="fromNow">{{record.fromNow}}发布</view>
 	</view>
 </template>
 
 <script>
 	import querystring from 'querystring'
 	import { cutAny } from '../../utils/utils.js'
+	import dayjs from 'dayjs'
 	const cut3 = cutAny(3)
 	export default {
 		// watch: {
@@ -114,7 +123,9 @@
 					}
 				}).then(({ result }) => {
 					console.log('点赞成功', result, this.record)
-					this.record.thumb_up_count = this.record.thumb_up_count + 1
+					this.record.thumb_up_by_me = true
+					this.record.thumb_up_users.push(this.$store.state.user.id)
+					// this.record.thumb_up_count = this.record.thumb_up_count + 1
 				}).catch(e => {
 					console.log('取消点赞', e)
 				})
@@ -186,5 +197,12 @@
 	.thumbBtn > .thumbBtn__text {
 		font-size: 0.9em;
 		// opacity: 0.5;
+	}
+	.thumbBtn > .thumbBtn__text--active {
+		color: red;
+	}
+	.fromNow {
+		color: rgba(0,0,0,0.3);
+		font-size: 0.7em;
 	}
 </style>
