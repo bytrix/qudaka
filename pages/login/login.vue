@@ -1,9 +1,13 @@
 <template>
-	<form @submit="login">
-		<input name="phone" placeholder="手机号" v-model="phone"/>
-		<input name="password" :password="true" placeholder="密码" v-model="password"/>
-		<button :loading="btnLoading" type="primary" form-type="submit" :disabled="btnDisabled">登陆/注册</button>
-	</form>
+	<view>
+		<uni-header showBackIcon></uni-header>
+		<view class="loginTip">手机号登陆</view>
+		<form @submit="login">
+			<input name="phone" placeholder="手机号" v-model="phone"/>
+			<input name="password" :password="true" placeholder="密码" v-model="password"/>
+			<button :loading="btnLoading" type="primary" form-type="submit" :disabled="btnDisabled">登陆/注册</button>
+		</form>
+	</view>
 </template>
 
 <script>
@@ -13,8 +17,8 @@
 	export default {
 		data() {
 			return {
-				phone: '13358212686',
-				password: '12121212',
+				phone: '',
+				password: '',
 				btnLoading: false
 			}
 		},
@@ -51,11 +55,11 @@
 						avatar: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615598582&t=869999991b8ff2677d3020f320fda1b4'
 					}
 				}).then(({ result }) => {
-					console.log('result', result)
+					console.log('登陆注册成功', result)
 					// #ifdef APP-PLUS
 					// model.user.truncate()
-					model.user.save({
-						id: result._id,
+					return model.user.save({
+						id: result.id,
 						username: result.username,
 						phone: result.phone,
 						avatar: result.avatar,
@@ -72,7 +76,17 @@
 						}
 					}).then((e) => {
 						console.log('commit state in login', result, e)
-						this.$store.commit('user', result)
+						this.$store.commit('user', {
+							id: result.id,
+							username: result.username,
+							phone: result.phone,
+							avatar: result.avatar,
+							gender: result.gender,
+							location: result.location,
+							birthday: result.birthday,
+							signature: result.signature,
+							friend_id: result.friend_id
+						})
 						uni.switchTab({
 							url: '../my/my'
 						})
@@ -86,6 +100,8 @@
 					})
 					this.btnLoading = false
 					// #endif
+				}).catch(e => {
+					console.log('登陆失败', e)
 				})
 			},
 			isValidPhone(phone) {
@@ -110,5 +126,10 @@
 	}
 	button {
 		margin: 24px;
+	}
+	.loginTip {
+		font-size: 1.5em;
+		margin-top: 1em;
+		text-align: center;
 	}
 </style>

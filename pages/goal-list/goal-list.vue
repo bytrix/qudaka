@@ -170,23 +170,33 @@
 					title: `删除目标：${goal_name}？`,
 					success({ confirm }) {
 						if(confirm) {
+							console.log('删除目标', id)
 							uni.showLoading()
 							uniCloud.callFunction({
 								name: 'remove_goal',
-								data: id
-							}).then(res => {
-								return uniCloud.callFunction({
-									name:'get_goal',
-									data: {
-										user_id: '1'
-									}
-								})
-							}).then(({ result }) => {
-								that.goals = result.data
-								uni.hideLoading()
-								uni.showToast({
-									title:'目标删除成功'
-								})
+								data: {
+									goal_id: id
+								},
+								success(res) {
+									console.log('删除成功', res, that.$store.state.user.id)
+									return uniCloud.callFunction({
+										name:'get_goal',
+										data: {
+											user_id: that.$store.state.user.id
+										},
+										success({ result }) {
+											console.log('get goals', result)
+											that.goals = result.data
+											uni.hideLoading()
+											uni.showToast({
+												title:'目标删除成功'
+											})
+										}
+									})
+								},
+								fail(e) {
+									console.log('删除目标失败', e)
+								}
 							})
 						}
 					}

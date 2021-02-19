@@ -76,7 +76,7 @@ export default {
 	},
 	insert(data) {
 		const fields = Object.keys(data).join(',')
-		const values = Object.values(data).map(_ => _ ? `"${_}"` : 'null').join(',')
+		const values = Object.values(data).map(_ => (_ === null || _ === undefined) ? 'null' : `"${_}"`).join(',')
 		const sql = `INSERT INTO ${this.table} (${fields}) VALUES(${values})`
 		console.log(sql)
 		return new Promise((resolve, reject) => {

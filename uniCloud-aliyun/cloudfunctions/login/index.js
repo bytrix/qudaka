@@ -11,7 +11,10 @@ exports.main = async (event, context) => {
 	const matched_users = res_matched_user.data
 	console.log('匹配用户', matched_users)
 	if(matched_users.length === 0) {
-		const res = await collection.add(event)
+		const res = await collection.add({
+			...event,
+			friend_id: []
+		})
 		return {
 			...res,
 			...event,

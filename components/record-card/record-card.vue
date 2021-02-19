@@ -72,8 +72,9 @@
 					}
 					console.log('user_id', user_id)
 					// return this.$store.state.user.friend_id
+					console.log('that.$store.state.user', that.$store.state.user)
 					console.log('that.$store.state.user.friend_id', that.$store.state.user.friend_id)
-					let friend_id = that.$store.state.user.friend_id.split(',')
+					let friend_id = that.$store.state.user.friend_id
 					if(friend_id.indexOf(user_id) !== -1) {
 						return true
 					}

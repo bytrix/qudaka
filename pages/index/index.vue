@@ -6,6 +6,7 @@
 			<view style="text-align: center; color: #cccccc; margin: 36rpx;">我是有底线的～</view>
 		</flex-scroll-view>
 	</view>
+	
 </template>
 
 <script>
@@ -29,6 +30,8 @@
 		},
 		onLoad() {
 			this.getData()
+			const subNVue = uni.getSubNVueById("popup")
+			// subNVue.hide()
 			// uniCloud.callFunction({
 			// 	name: 'get_records'
 			// }).then(({ result }) => {
@@ -38,6 +41,7 @@
 		},
 		methods: {
 			getData() {
+				console.log('getData index.')
 				uni.showLoading();
 				const db = uniCloud.database()
 				const that = this
@@ -46,22 +50,28 @@
 					.orderBy('create_time', 'desc')
 					.get()
 					.then(({ result }) => {
-						console.log('result', result.data, dayjs)
+						console.log('result', result.data, that.$store.state)
 						that.records = result.data.map(_ => ({
 							..._,
-							thumb_up_by_me: _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1,
+							thumb_up_by_me: that.$store.state.user ? _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1 : false,
 							fromNow: dayjs(_.create_time).fromNow()
 						}))
 						console.log('that.records', that.records)
 						uni.hideLoading()
 					})
+					.catch(e => {
+						console.log('查询失败', e)
+					})
 			},
 			toSearch() {
-				console.log('to search.', this.$refs.popup.type)
+				const subNVue = uni.getSubNVueById("popup")
+				console.log("subNVue", subNVue)
+				subNVue.show('slide-in-bottom', 200)
+				// console.log('to search.', this.$refs.popup.type)
 				// uni.navigateTo({
 				// 	url: '../search/search'
 				// })
-				this.$refs.popup.open()
+				// this.$refs.popup.open()
 			}
 		}
 	}

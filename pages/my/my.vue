@@ -1,6 +1,7 @@
 <template>
 	<view>
 		<uni-header>我的</uni-header>
+		<!-- <image src="../../static/bg.jpeg"></image> -->
 		<view v-if="user!==null">
 			<uni-list>
 				<uni-list-item class="listItem" :clickable="true" @click="changeAvatar" link>
@@ -45,7 +46,6 @@
 			<button class="logoutBtn" type="warn" @click="logout">退出登陆</button>
 		</view>
 		<view v-else class="loginBtn" @click="toLogin">点击登陆</view>
-		
 	</view>
 </template>
 
@@ -157,6 +157,10 @@
 							})
 						}).then(() => {
 							this.user.gender = gender
+							console.log('this.user', this.user)
+							this.$store.commit('user', {
+								gender: gender
+							})
 							uni.hideLoading()
 						})
 					}

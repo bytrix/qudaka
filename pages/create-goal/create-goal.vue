@@ -105,6 +105,7 @@
 
 <style lang="scss">
 	page {
+		background-color: #FFFFFF;
 		padding: $page-padding;
 	}
 	label > view {
