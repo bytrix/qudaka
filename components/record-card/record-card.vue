@@ -17,10 +17,15 @@
 		<view class="record__imageGroup" v-if="record.images.length !== 0">
 			<image
 				mode="aspectFill"
-				v-for="image in cut3images(record.images)"
+				v-for="image in record.images"
 				class="image"
 				:src="image">
 			</image>
+			<!-- <view
+				style="border: 1px solid red; margin: 2px; padding: 2px;"
+				v-for="image in cut3images(record.images)">
+				{{image}}
+			</view> -->
 			<!-- <view style="width: 33%">
 				<view style="padding-bottom: 100%; position: relative;">
 					<image
@@ -183,6 +188,7 @@
 		// position: absolute;
 		// width: 100%;
 		// height: 100%;
+		width: 33.33%;
 		height: 100px;
 		margin: 0px 2px;
 		border-radius: 3px;

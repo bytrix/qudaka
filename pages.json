@@ -7,7 +7,7 @@
 				"enablePullDownRefresh": true,
 				"app-plus": {
 					"subNVues": [{
-						"id": "popup",
+						"id": "search_popup",
 						"path": "./pages/index/popup",
 						"type":"popup",
 						"style": {

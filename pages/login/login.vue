@@ -54,10 +54,10 @@
 						username: randomUsername(),
 						avatar: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1615598582&t=869999991b8ff2677d3020f320fda1b4'
 					}
-				}).then(({ result }) => {
+				}).then(async ({ result }) => {
 					console.log('登陆注册成功', result)
 					// #ifdef APP-PLUS
-					// model.user.truncate()
+					await model.user.truncate()
 					return model.user.save({
 						id: result.id,
 						username: result.username,

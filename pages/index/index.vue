@@ -31,20 +31,22 @@
 		onLoad() {
 			console.log('on load')
 			this.getData()
-			const subNVue = uni.getSubNVueById("popup")
-			uni.$on('searchRecords', data => {
-				console.log('search.', data)
-				subNVue.hide('slide-out-top', 200)
-				this.records = data
-			})
-			// uniCloud.callFunction({
-			// 	name: 'get_records'
-			// }).then(({ result }) => {
-			// 	console.log('records', result)
-			// 	this.records = result.data
-			// })
+			this.resetPopup()
+		},
+		onShow() {
+			console.log('on show')
+			this.getData()
+			// this.resetPopup()
 		},
 		methods: {
+			resetPopup() {
+				const subNVue = uni.getSubNVueById('search_popup')
+				uni.$on('searchRecords', data => {
+					console.log('search.', data)
+					subNVue.hide('slide-out-top', 200)
+					this.records = data
+				})
+			},
 			getData() {
 				console.log('getData index.')
 				uni.showLoading();
@@ -69,7 +71,7 @@
 					})
 			},
 			toSearch() {
-				const subNVue = uni.getSubNVueById("popup")
+				const subNVue = uni.getSubNVueById('search_popup')
 				console.log("subNVue", subNVue)
 				subNVue.show('slide-in-top', 200)
 				

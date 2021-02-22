@@ -1,7 +1,7 @@
 export function cutAny(n) {
 	return function(arr) {
 		// console.log('arr', arr)
-		let emptyArr = new Array(n).fill(undefined)
+		let emptyArr = new Array(n).fill(null)
 		// if(arr.length <= n) {
 			// for(let i in arr) {
 			// 	emptyArr[i] = arr[i]

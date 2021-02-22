@@ -98,9 +98,10 @@
 					})
 				})
 				.then(() => {
-					return uni.reLaunch({
-						url: '../goal-list/goal-list'
-					})
+					// return uni.reLaunch({
+					// 	url: '../goal-list/goal-list'
+					// })
+					return uni.navigateBack()
 				})
 				.then(() => {
 					uni.hideLoading()

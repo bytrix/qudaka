@@ -96,9 +96,11 @@ export default {
 	},
 	select() {
 		return new Promise((resolve, reject) => {
+			const sql = `SELECT * FROM ${this.table}`
+			console.log(sql)
 			plus.sqlite.selectSql({
 				name: db_name,
-				sql: `select * from ${this.table}`,
+				sql,
 				success(e) {
 					console.log('查询成功', e)
 					resolve(e)

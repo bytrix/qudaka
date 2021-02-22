@@ -80,6 +80,7 @@ export default {
 				return db.select()
 			})
 			.then(res => {
+				console.log('get res', res)
 				if(res.length === 1) {
 					resolve(res[0])
 				} else {

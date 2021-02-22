@@ -62,13 +62,17 @@
 			handleSortBy(sortBy) {
 				this.sortBy = sortBy
 				switch(sortBy) {
+					case 'all':
+						this.startTime = null
+						this.endTime = null
+						break
 					case 'day':
-						this.startTime = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
-						this.endTime = dayjs().format('YYYY-MM-DD')
+						this.startTime = dayjs().subtract(4, 'days').format('YYYY-MM-DD')
+						this.endTime = dayjs().add(1, 'days').format('YYYY-MM-DD')
 						break
 					case 'week':
-						this.startTime = dayjs().startOf('week').add(1, 'days').format('YYYY-MM-DD')
-						this.endTime = dayjs().endOf('week').add(1, 'days').format('YYYY-MM-DD')
+						this.startTime = dayjs().startOf('week').format('YYYY-MM-DD')
+						this.endTime = dayjs().endOf('week').format('YYYY-MM-DD')
 						break
 					case 'month':
 						this.startTime = dayjs().startOf('month').format('YYYY-MM-DD')
@@ -80,22 +84,29 @@
 				this.showMyRecord = !this.showMyRecord
 			},
 			handleCancel() {
-				const popupNvue = uni.getSubNVueById('popup')
+				console.log(1111)
+				const popupNvue = uni.getSubNVueById('search_popup')
+				console.log(222, popupNvue)
 				popupNvue.hide('slide-out-top', 200)
+				console.log(333)
 			},
 			handleSubmit() {
 				uni.showLoading();
 				const db = uniCloud.database()
 				const that = this
+				// const validateTime = this.startTime !== null || this.endTime !== null
 				db.collection('record,user')
 					.field('user_id{username,avatar,signature},text,images,goal,create_time,thumb_up_users')
 					.orderBy('create_time', 'desc')
 					.get()
 					.then(({ result }) => {
+						if(that.$store.state.user === null) {
+							throw new Error('您未登陆')
+						}
 						console.log('result', result.data, that.$store.state)
 						that.records = result.data.map(_ => ({
 							..._,
-							thumb_up_by_me: that.$store.state.user ? _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1 : false,
+							thumb_up_by_me: _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1,
 							fromNow: dayjs(_.create_time).fromNow()
 						}))
 						.filter(_ => {
@@ -106,10 +117,19 @@
 							return true
 						})
 						.filter(_ => {
-							const between = dayjs(_.create_time).isBetween(that.startTime, that.endTime)
-							if(!that.startTime || !that.endTime) {
-								return true
-							}
+							// if(that.endTime === null) {
+							// 	that.endTime = dayjs()
+							// }
+							// if(that.startTime === null) {
+							// 	that.startTime = dayjs('1970-01-01')
+							// }
+							const between = dayjs(_.create_time).isBetween(
+								that.startTime || dayjs(),
+								that.endTime || dayjs('1970-01-01')
+							)
+							// if(validateTime) {
+							// 	return true
+							// }
 							return between
 						})
 						// console.log('that.records', that.records)
@@ -118,6 +138,13 @@
 					})
 					.catch(e => {
 						console.log('查询失败', e)
+						const popupNvue = uni.getSubNVueById('search_popup')
+						popupNvue.hide('slide-out-top', 200)
+						uni.showToast({
+							icon: 'none',
+							position: 'bottom',
+							title: e.toString()
+						})
 					})
 			}
 		}
