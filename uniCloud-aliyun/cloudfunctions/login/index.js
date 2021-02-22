@@ -5,11 +5,13 @@ const db = uniCloud.database()
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	console.log('event : ', event)
-	const { phone } = event
+	const { phone, password } = event
 	const collection = await db.collection('user')
 	const res_matched_user = await collection.where({ phone }).get()
 	const matched_users = res_matched_user.data
 	console.log('匹配用户', matched_users)
+	
+	// 若找到的用户数为0，则注册新 用户
 	if(matched_users.length === 0) {
 		const res = await collection.add({
 			...event,
@@ -21,6 +23,9 @@ exports.main = async (event, context) => {
 			friend_id: []
 		}
 	} else {
+		if(password !== matched_users[0].password) {
+			throw new Error('密码错误')
+		}
 		return {
 			registered: true,
 			// username: username,

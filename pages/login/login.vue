@@ -101,7 +101,14 @@
 					this.btnLoading = false
 					// #endif
 				}).catch(e => {
-					console.log('登陆失败', e)
+					console.log('登陆失败', e.toString())
+					uni.showToast({
+						title: '密码错误',
+						position: 'bottom',
+						icon: 'none'
+					})
+				}).finally(() => {
+					this.btnLoading = false
 				})
 			},
 			isValidPhone(phone) {
@@ -117,13 +124,12 @@
 	page {
 		background-color: white;
 	}
-	input {
-		/* background-color: white; */
-		margin: 15px;
-		padding: 15px;
-		text-indent: 10px;
-		border-bottom: 1px solid rgba(0,0,0,0.1);
-	}
+	// input {
+	// 	margin: 15px;
+	// 	padding: 15px;
+	// 	text-indent: 10px;
+	// 	border-bottom: 1px solid rgba(0,0,0,0.1);
+	// }
 	button {
 		margin: 24px;
 	}

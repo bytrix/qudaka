@@ -12,9 +12,7 @@
 			uni.getSystemInfo({
 				success(res) {
 					const scrollHeight = res.windowHeight - self.$headerHeight
-					// const scrollHeight = res.windowHeight
 					console.log('getSystemInfo', res.windowHeight, self.$headerHeight)
-					// self.$store.state.scrollHeight = scrollHeight
 					self.$store.commit('scrollHeight', scrollHeight)
 				}
 			})
@@ -64,12 +62,12 @@
 		box-sizing: border-box;
 	}
 	textarea {
-		// background-color: #FFFFFF;
 		width: 100%;
 	}
 	input {
-		border-bottom: 1px solid rgba($uni-color-primary, 0.3);
-		margin: 12px;
-		padding: 6px;
+		border-bottom: 1px solid rgba(0,0,0,0.1);
+		margin: 14px;
+		text-indent: 8px;
+		padding: 14px;
 	}
 </style>

@@ -24,19 +24,10 @@
 			}
 		},
 		onShow() {
-			console.log('on show', this.$store.state.user)
-			if(!this.$store.state.user) {
-				return
-			}
-			const db = uniCloud.database()
-			db.collection('user,user').doc(this.$store.state.user.id)
-				.field('username,avatar,friend_id{username,avatar}')
-				.get()
-				.then(({ result }) => {
-					console.log('好友', result)
-					this.friends = result.data[0].friend_id
-					console.log('friends', this.friends)
-				})
+			this.getFriendList()
+		},
+		onLoad() {
+			this.getFriendList()
 		},
 		methods: {
 			toUser(user) {
@@ -45,6 +36,23 @@
 				uni.navigateTo({
 					url: '../user/user?' + u
 				})
+			},
+			getFriendList() {
+				console.log('on show', this.$store.state.user)
+				if(!this.$store.state.user) {
+					return
+				}
+				uni.showLoading()
+				const db = uniCloud.database()
+				db.collection('user,user').doc(this.$store.state.user.id)
+					.field('username,avatar,friend_id{username,avatar}')
+					.get()
+					.then(({ result }) => {
+						console.log('好友', result)
+						this.friends = result.data[0].friend_id
+						console.log('friends', this.friends)
+						uni.hideLoading()
+					})
 			}
 		}
 	}

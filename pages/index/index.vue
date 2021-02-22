@@ -20,7 +20,7 @@
 	
 	export default {
 		components: {
-			FlexScrollView
+			FlexScrollView,
 		},
 		data() {
 			return {
@@ -29,9 +29,14 @@
 			}
 		},
 		onLoad() {
+			console.log('on load')
 			this.getData()
 			const subNVue = uni.getSubNVueById("popup")
-			// subNVue.hide()
+			uni.$on('searchRecords', data => {
+				console.log('search.', data)
+				subNVue.hide('slide-out-top', 200)
+				this.records = data
+			})
 			// uniCloud.callFunction({
 			// 	name: 'get_records'
 			// }).then(({ result }) => {
@@ -66,7 +71,8 @@
 			toSearch() {
 				const subNVue = uni.getSubNVueById("popup")
 				console.log("subNVue", subNVue)
-				subNVue.show('slide-in-bottom', 200)
+				subNVue.show('slide-in-top', 200)
+				
 				// console.log('to search.', this.$refs.popup.type)
 				// uni.navigateTo({
 				// 	url: '../search/search'

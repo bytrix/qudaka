@@ -67,9 +67,15 @@
 					.field('user_id{avatar,username,signature},text,goal,images,thumb_up_users,create_time')
 					.get()
 					.then(({ result }) => {
-						console.log('record...', result.data)
+						console.log('record....', result.data)
 						this.record = result.data[0]
-						this.record.thumb_up_by_me = this.record.thumb_up_users.indexOf(that.$store.state.user.id) !== -1
+						console.log(111, that.$store.state.user)
+						if(this.$store.state.user) {
+							this.record.thumb_up_by_me = this.record.thumb_up_users.indexOf(that.$store.state.user.id) !== -1
+						} else {
+							this.record.thumb_up_by_me = false
+						}
+						// this.record.thumb_up_by_me = that.$store.state.user ? (this.record.thumb_up_users.indexOf(that.$store.state.user.id) !== -1) : false
 						this.record.fromNow = dayjs(this.record.create_time).fromNow()
 						console.log('this.record', this.record)
 						uni.hideLoading()

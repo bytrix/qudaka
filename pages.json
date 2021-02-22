@@ -13,8 +13,7 @@
 						"style": {
 							"position":"absolute",
 							// "dock":"left",
-							"height":"100px",
-							"bottom":"0px",
+							"height":"300px",
 							"mask": "rgba(0,0,0,0.4)"
 						}
 					}]

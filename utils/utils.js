@@ -1,11 +1,16 @@
 export function cutAny(n) {
 	return function(arr) {
+		// console.log('arr', arr)
 		let emptyArr = new Array(n).fill(undefined)
-		if(arr.length <= n) {
-			for(let i in arr) {
-				emptyArr[i] = arr[i]
-			}
+		// if(arr.length <= n) {
+			// for(let i in arr) {
+			// 	emptyArr[i] = arr[i]
+			// }
+		// }
+		for(let i = 0; i < n; i++) {
+			emptyArr[i] = arr[i]
 		}
+		console.log('emptyArr', emptyArr)
 		return emptyArr
 	}
 }

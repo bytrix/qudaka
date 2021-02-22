@@ -8,7 +8,6 @@
 					{{record.goal.goal_name}}，已坚持{{record.goal.times}}天
 				</view>
 			</view>
-			<!-- {{isMyFriend(record.user_id[0]._id)}} -->
 			<view v-if="!isUserSelf">
 				<view v-if="isMyFriend(record.user_id[0]._id)" class="record__header__followBtn">取消关注</view>
 				<view v-else class="record__header__followBtn">关注TA</view>
@@ -16,7 +15,22 @@
 		</view>
 		<view class="record__text">{{record.text}}</view>
 		<view class="record__imageGroup" v-if="record.images.length !== 0">
-			<image mode="aspectFill" v-for="image in cut3images(record.images)" class="image" :src="image"></image>
+			<image
+				mode="aspectFill"
+				v-for="image in cut3images(record.images)"
+				class="image"
+				:src="image">
+			</image>
+			<!-- <view style="width: 33%">
+				<view style="padding-bottom: 100%; position: relative;">
+					<image
+						mode="aspectFill"
+						v-for="image in cut3images(record.images)"
+						class="image"
+						:src="image">
+					</image>
+				</view>
+			</view> -->
 		</view>
 		<view class="thumbBtn" @click.stop="thumbUp(record._id)">
 			<uni-icons
@@ -39,15 +53,6 @@
 	import dayjs from 'dayjs'
 	const cut3 = cutAny(3)
 	export default {
-		// watch: {
-		// 	// link: function(a, b) {
-		// 	// 	console.log('watch link', a, b)
-		// 	// 	this.link = a
-		// 	// }
-		// 	// link(n, o) {
-		// 	// 	console.log('get link')
-		// 	// }
-		// },
 		data() {
 			return {}
 		},
@@ -84,6 +89,7 @@
 		},
 		methods: {
 			cut3images(arr) {
+				// console.log('cut3images arr', arr)
 				if(arr.length === 0) return
 				return cut3(arr)
 			},
@@ -99,14 +105,6 @@
 					return
 				}
 				const user = this.record.user_id[0]
-				// const p = querystring.stringify({
-				// 	text: this.record.text,
-				// 	goal_name: this.record.goal.goal_name,
-				// 	create_time: this.record.create_time,
-				// 	username: user.username,
-				// 	avatar: user.avatar,
-				// 	images: this.record.images.join(',')
-				// })
 				const p = querystring.stringify({
 					record_id: this.record._id
 				})
@@ -139,7 +137,6 @@
 <style lang="scss">
 	.record__card {
 		width: 100%;
-		// margin: 15px 0px;
 		margin-bottom: 2px;
 		padding: 25px 20px 15px 20px;
 		box-sizing: border-box;
@@ -175,8 +172,17 @@
 		display: flex;
 		margin-bottom: 15px;
 	}
+	// .image {
+	// 	position: absolute;
+	// 	width: 100%;
+	// 	height: 100%;
+	// 	margin: 0px 2px;
+	// 	border-radius: 3px;
+	// }
 	.image {
-		// width: 100px;
+		// position: absolute;
+		// width: 100%;
+		// height: 100%;
 		height: 100px;
 		margin: 0px 2px;
 		border-radius: 3px;
@@ -187,7 +193,6 @@
 		margin-top: 0.15em;
 	}
 	.thumbBtn {
-		// background-color: red;
 		opacity: 0.4;
 		display: inline-block;
 		padding: 15rpx 25rpx;

@@ -1,21 +1,126 @@
 <template>
 	<div class="popup">
-		<view style="display: flex; flex-direction: row; padding: 6px;">
-			<view class="popupButton">取消</view>
-			<view style="flex: 1"></view>
-			<view class="popupButton popupButton--active">
-				<text style="color: #FFFFFF;">确定</text>
-			</view>
+		<uni-header></uni-header>
+		<view class="datepicker-group">
+			<picker mode="date" @change="handleStartTime" class="datepicker">
+				<text class="datepicker__text">{{startTime || '开始日期'}}</text>
+			</picker>
+			<text style="padding: 8px">至</text>
+			<picker mode="date" @change="handleEndTime" class="datepicker">
+				<text class="datepicker__text">{{endTime || '结束日期'}}</text>
+			</picker>
 		</view>
-		<view>
-			<label class="radio"><radio value="day" />按日2</label>
+		<view class="timerange-tab-group">
+			<text :class="['timerange-tab', sortBy === 'day' && 'active']" @click="handleSortBy('day')">最近5天</text>
+			<text :class="['timerange-tab', sortBy === 'week' && 'active']" @click="handleSortBy('week')">本周</text>
+			<text :class="['timerange-tab', sortBy === 'month' && 'active']" @click="handleSortBy('month')">本月</text>
+			<text :class="['timerange-tab', sortBy === 'all' && 'active']" @click="handleSortBy('all')">全部</text>
+		</view>
+		<uni-checkbox
+			:checked="showMyRecord"
+			@onCheck="handleCheck"
+			style="margin-left: 20px;"
+			text="只看我的记录" />
+		<view style="margin-top: 16px; flex-direction: row; padding: 16px;">
+			<uni-button text="取消" @click="handleCancel" />
+			<view style="flex: 1"></view>
+			<uni-button type="primary" text="确定" @click="handleSubmit" />
 		</view>
 	</div>
 </template>
 
 <script>
+	import tabItem from './tab-item.vue'
+	import tabs from './tabs.vue'
+	import dayjs from 'dayjs'
+	import relativeTime from 'dayjs/plugin/relativeTime'
+	import isBetween from 'dayjs/plugin/isBetween'
+	import 'dayjs/locale/zh-cn'
+	
+	dayjs.extend(relativeTime)
+	dayjs.extend(isBetween)
+	dayjs.locale('zh-cn')
+	
 	export default {
-		
+		components: {
+			tabItem,
+			tabs
+		},
+		data: {
+			startTime: null,
+			endTime: null,
+			sortBy: null,
+			showMyRecord: false
+		},
+		methods: {
+			handleStartTime({ detail }) {
+				this.startTime = detail.value
+			},
+			handleEndTime({ detail }) {
+				this.endTime = detail.value
+			},
+			handleSortBy(sortBy) {
+				this.sortBy = sortBy
+				switch(sortBy) {
+					case 'day':
+						this.startTime = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
+						this.endTime = dayjs().format('YYYY-MM-DD')
+						break
+					case 'week':
+						this.startTime = dayjs().startOf('week').add(1, 'days').format('YYYY-MM-DD')
+						this.endTime = dayjs().endOf('week').add(1, 'days').format('YYYY-MM-DD')
+						break
+					case 'month':
+						this.startTime = dayjs().startOf('month').format('YYYY-MM-DD')
+						this.endTime = dayjs().endOf('month').format('YYYY-MM-DD')
+						break
+				}
+			},
+			handleCheck() {
+				this.showMyRecord = !this.showMyRecord
+			},
+			handleCancel() {
+				const popupNvue = uni.getSubNVueById('popup')
+				popupNvue.hide('slide-out-top', 200)
+			},
+			handleSubmit() {
+				uni.showLoading();
+				const db = uniCloud.database()
+				const that = this
+				db.collection('record,user')
+					.field('user_id{username,avatar,signature},text,images,goal,create_time,thumb_up_users')
+					.orderBy('create_time', 'desc')
+					.get()
+					.then(({ result }) => {
+						console.log('result', result.data, that.$store.state)
+						that.records = result.data.map(_ => ({
+							..._,
+							thumb_up_by_me: that.$store.state.user ? _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1 : false,
+							fromNow: dayjs(_.create_time).fromNow()
+						}))
+						.filter(_ => {
+							const isMyRecord = _.user_id[0]._id === that.$store.state.user.id
+							if(that.showMyRecord) {
+								return isMyRecord
+							}
+							return true
+						})
+						.filter(_ => {
+							const between = dayjs(_.create_time).isBetween(that.startTime, that.endTime)
+							if(!that.startTime || !that.endTime) {
+								return true
+							}
+							return between
+						})
+						// console.log('that.records', that.records)
+						uni.hideLoading()
+						uni.$emit('searchRecords', that.records)
+					})
+					.catch(e => {
+						console.log('查询失败', e)
+					})
+			}
+		}
 	}
 </script>
 
@@ -23,15 +128,47 @@
 	.radio {
 		background-color: red;
 	}
-.popup {
-	background-color: #FFFFFF;
-}
-.popupButton {
-	width: 70px;
-	align-items: center;
-	padding: 6px;
-}
-.popupButton--active {
-	background-color: $uni-color-primary;
-}
+	.popup {
+		background-color: #FFFFFF;
+	}
+	.popupButton {
+		width: 70px;
+		align-items: center;
+		padding: 6px;
+	}
+	.popupButton--active {
+		background-color: $uni-color-primary;
+	}
+	.datepicker-group {
+		display: flex;
+		flex-direction: row;
+		padding: 0px 30px;
+	}
+	.datepicker {
+		flex: 1;
+		border-bottom: 1px solid #eee;
+		padding: 8px;
+	}
+	.datepicker__text {
+		color: #999;
+		text-align: center;
+	}
+	.timerange-tab-group {
+		padding: 8px;
+		margin-top: 8px;
+		display: flex;
+		flex-direction: row;
+	}
+	.timerange-tab {
+		font-size: 16px;
+		background-color: $uni-bg-color-hover;
+		padding: 9px 18px;
+		margin: 5px;
+		border: 1px solid $uni-bg-color-hover;
+	}
+	.active {
+		background-color: rgba($uni-color-primary, 0.1);
+		color: $uni-color-primary;
+		border: 1px solid $uni-color-primary;
+	}
 </style>

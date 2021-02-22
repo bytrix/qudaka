@@ -59,6 +59,19 @@
 		},
 		onLoad(user) {
 			this.user = user
+			uni.showLoading()
+			const db = uniCloud.database()
+			db.collection('record')
+				.where({
+					user_id: this.user._id
+				})
+				.get()
+				.then(({ result }) => {
+					console.log('res.', result.data)
+					this.records = result.data
+					uni.hideLoading()
+				})
+			
 			model.user.get().then(u => {
 				console.log('local user', u)
 				console.log('当前页面的用户', this.user)
@@ -69,17 +82,6 @@
 					this.followed = true
 				}
 			})
-			// console.log('user', this.user)
-			const db = uniCloud.database()
-			db.collection('record')
-				.where({
-					user_id: this.user._id
-				})
-				.get()
-				.then(({ result }) => {
-					console.log('res.', result.data)
-					this.records = result.data
-				})
 		},
 		methods: {
 			follow() {
