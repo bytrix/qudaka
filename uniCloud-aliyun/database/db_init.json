@@ -35,7 +35,9 @@
 				"create_by": "1",
 				"update_time": "2021-02-14",
 				"timestamp": 0,
-				"times": 0
+				"times": 0,
+				"repeat_times": 1,
+				"priority": "urgent"
 			}
 		]
 	},
@@ -50,6 +52,7 @@
 				// "thumb_up_count": 0,
 				"thumb_up_users": [],
 				"goal": {
+					"_id": "1",
 					"goal_name": "健身打卡",
 					"times": 1
 				},
@@ -59,6 +62,7 @@
 				// },
 				"user_id": "1",
 				"create_time": "2020-10-10 10:10:10",
+				"date": "2020-10-10",
 				"times": 1
 			}
 		]

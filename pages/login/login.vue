@@ -3,8 +3,8 @@
 		<uni-header showBackIcon></uni-header>
 		<view class="loginTip">手机号登陆</view>
 		<form @submit="login">
-			<input name="phone" placeholder="手机号" v-model="phone"/>
-			<input name="password" :password="true" placeholder="密码" v-model="password"/>
+			<input class="input" name="phone" placeholder="手机号" v-model="phone"/>
+			<input class="input" name="password" :password="true" placeholder="密码" v-model="password"/>
 			<button :loading="btnLoading" type="primary" form-type="submit" :disabled="btnDisabled">登陆/注册</button>
 		</form>
 	</view>

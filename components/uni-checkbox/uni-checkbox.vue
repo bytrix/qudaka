@@ -15,9 +15,9 @@
 	export default {
 		props: ['text', 'style', 'checked'],
 		data() {
-			// return {
-			// 	checked: false
-			// };
+			return {
+				checked: false
+			};
 		},
 		methods: {
 			handleCheck() {
@@ -42,6 +42,7 @@
 		width: 24px;
 		height: 24px;
 		align-items: center;
+		text-align: center;
 		border-radius: 4px;
 	}
 	.active {

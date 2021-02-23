@@ -3,7 +3,7 @@
 		<uni-header showBackIcon leftIcon='plus'>{{goal.name}}</uni-header>
 		<view class="encourageWords">
 			<text v-if="goal.times === 0">坚持就是胜利！</text>
-			<text v-else-if="goal.times !== 0 && now === goal.update_time">今天已经打过卡了</text>
+			<!-- <text v-else-if="goal.times !== 0 && now === goal.update_time">今天已经打过卡了</text> -->
 			<text v-else>再坚持{{goal.left_days}}天，加油哦～</text>
 		</view>
 		<form @submit="addRecord">
@@ -12,7 +12,8 @@
 				@onImageUpload="onImageUpload"
 			/>
 			<textarea name='text' class="textarea" placeholder="写下你的打卡宣言"></textarea>
-			<button :disabled="now === goal.update_time" type="primary" class="submitBtn" form-type="submit">打卡</button>
+			<!-- <button :disabled="now === goal.update_time" type="primary" class="submitBtn" form-type="submit">打卡</button> -->
+			<button type="primary" class="submitBtn" form-type="submit">打卡</button>
 		</form>
 	</view>
 </template>
@@ -66,13 +67,15 @@
 							// 	unionid: u.unionid
 							// },
 							goal: {
+								_id: this.goal.id,
 								goal_name: this.goal.name,
 								times: this.goal.times + 1
 							},
 							// goal_id: this.goal.id,
 							user_id: u.id,
 							text: formData.detail.value.text,
-							create_time: dayjs().format('YYYY-MM-DD HH:mm:ss')
+							create_time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+							date: dayjs().format('YYYY-MM-DD')
 						}
 					})
 				})

@@ -1,18 +1,24 @@
 <template>
 	<view>
 		<uni-header rightIcon='plusempty' @onIconClick="onIconClick">趣打卡</uni-header>
-		<view v-if="user" class="statBar" @click="toReportChart">
-			<text class="statInfo">
+		<view v-if="user" class="statBar">
+			<!-- <text class="statInfo" style="background-color: red;">
 				{{c_goals.length}}项目标，已完成{{c_goals.filter(_ => _.times === _.diff).length}}项
-			</text>
-			<view>
+			</text> -->
+			<picker mode="date" @change="handleDate">
+				<view style="flex: 1">
+					{{date}} 的目标
+					<uni-icons type="arrowdown" size="12"></uni-icons>
+				</view>
+			</picker>
+			<view style="flex: 1; text-align: right;" @click="toReportChart">
 				查看统计
 				<uni-icons type="forward" size="12"></uni-icons>
 			</view>
 		</view>
 		<scroll-view v-if="user" scroll-y="true" :style="{height:scrollHeight+'px'}">
-			<uni-swipe-action v-for="goal in c_goals">
-				<uni-swipe-action-item>
+			<uni-swipe-action v-for="goal in goals">
+				<uni-swipe-action-item :style="{'opacity': goal.finish ? 0.8 : 1}">
 					<template v-slot:right>
 						<view class="swipeActionItem__rightOption">
 							<!-- <view class="swipeActionItem__rightOption-btn">
@@ -24,9 +30,21 @@
 						</view>
 					</template>
 					<view class="goal" @click="addRecord(goal)">
-						<view class="goal__board">
+						<view
+							class="goal__board"
+							:style="{
+								'border-left': goal.finish ? '#eee' : `4px solid ${priority_colors[goal.priority]}`,
+							}">
 							<view :class="['goal__goalName', {'goal__disabled':goal.diff === goal.times}]">
-								<view>{{goal.goal_name}}</view>
+								<view>
+									<text
+										v-if="!goal.finish"
+										:style="{'background-color': priority_colors[goal.priority]}"
+										class="priorityLabel">
+										{{priority_labels[goal.priority]}}
+									</text>
+									<text :class="[goal.finish && 'goal--removed']">{{goal.goal_name}}</text>
+								</view>
 								<view style="font-size: 0.7em; margin-top: 1em; color: #bbbbbb;">
 									{{goal.start_time}} ~ {{goal.end_time}}
 								</view>
@@ -59,6 +77,8 @@
 <script>
 	import dayjs from 'dayjs'
 	import querystring from 'querystring'
+	import { priority_colors, priority_labels } from '../../biz/priority.js'
+	console.log('priority_colors', priority_colors)
 	export default {
 		onReady() {
 			const that = this
@@ -91,23 +111,71 @@
 						title: '统计',
 						key: 'stat'
 					}
-				]
+				],
+				priority_colors,
+				priority_labels,
+				date: dayjs().format('YYYY-MM-DD'),
+				// record_ids: []
+				finished_goal_ids: []
 			}
 		},
 		computed: {
-			c_goals() {
-				return this.goals.map(_ => ({
-					..._,
-					diff: dayjs(_.end_time).diff(_.start_time, 'd') + 1
-				}))
-			},
+			// c_goals() {
+			// 	const that = this
+			// 	return this.goals.map(_ => ({
+			// 		..._,
+			// 		diff: dayjs(_.end_time).diff(_.start_time, 'd') + 1,
+			// 		finish: that.finished_goal_ids.indexOf(_._id) !== -1
+			// 	}))
+			// },
 			user() {
 				return this.$store.state.user
 			}
 		},
+		// watch: {
+		// 	goals: {
+		// 		handler(newVal, oldVal) {
+		// 			const that = this
+		// 			console.log('goals', newVal, oldVal)
+		// 			this.goals = newVal.map(_ => ({
+		// 				..._,
+		// 				diff: dayjs(_.end_time).diff(_.start_time, 'd') + 1,
+		// 				finish: that.finished_goal_ids.indexOf(_._id) !== -1
+		// 			}))
+		// 		},
+		// 		deep: true
+		// 	},
+		// },
 		methods: {
 			onTabChange(key) {
 				this.tabIndex = key
+			},
+			handleDate({ detail }) {
+				this.date = detail.value
+				// uniCloud.callFunction({
+				// 	name: 'get_records',
+				// 	data: {
+				// 		date: this.date,
+				// 		user_id: this.$store.state.user.id,
+				// 	}
+				// }).then(res => {
+				// 	console.log('get_records', res)
+				// })
+				// this.getRecords()
+				this.getGoals()
+			},
+			getRecords() {
+				uniCloud.callFunction({
+					name: 'get_records',
+					data: {
+						date: this.date,
+						user_id: this.$store.state.user.id
+					}
+				}).then(({ result }) => {
+					console.log('get records', result.data)
+					this.finished_goal_ids = result.data.map(r => r.goal._id)
+					console.log('finished_goal_ids', this.finished_goal_ids)
+				})
 			},
 			getGoals() {
 				console.log('local user', this.$store.state.user)
@@ -115,6 +183,7 @@
 					// if(loading) {
 						uni.showLoading()
 					// }
+					this.getRecords()
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {
@@ -122,7 +191,11 @@
 						}
 					}).then(({ result }) => {
 						console.log('result.data', result.data)
-						this.goals = result.data
+						this.goals = result.data.map(_ => ({
+							..._,
+							diff: dayjs(_.end_time).diff(_.start_time, 'd') + 1,
+							finish: this.finished_goal_ids.indexOf(_._id) !== -1,
+						}))
 						uni.hideLoading()
 					})
 				} else {
@@ -139,17 +212,17 @@
 					update_time: goal.update_time,
 					left_days
 				})
-				if(left_days > 0) {
+				// if(left_days > 0) {
 					uni.navigateTo({
 						url: '../add-record/add-record?' + p
 					})
-				} else {
-					uni.showToast({
-						icon: 'none',
-						position: 'bottom',
-						title: '任务结束'
-					})
-				}
+				// } else {
+				// 	uni.showToast({
+				// 		icon: 'none',
+				// 		position: 'bottom',
+				// 		title: '任务结束'
+				// 	})
+				// }
 			},
 			onIconClick() {
 				uni.navigateTo({
@@ -207,6 +280,12 @@
 </script>
 
 <style lang="scss">
+	.priorityLabel {
+		border-radius: 4px;
+		margin-right: 6px;
+		color: #FFFFFF;
+		padding: 2px 6px;
+	}
 	.statBar {
 		margin-top: 10px;
 		font-size: 0.8em;
@@ -245,7 +324,7 @@
 		background-color: #3F536E;
 	}
 	.goal__board {
-		box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.1);
+		box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);
 		background-color: white;
 		display: flex;
 		padding: 12px 24px;
@@ -281,6 +360,10 @@
 	}
 	.goal__disabled {
 		color: $uni-text-color-disable;
+	}
+	.goal--removed {
+		text-decoration: line-through;
+		color: #777;
 	}
 	.swipeActionItem__rightOption {
 		display: flex;
