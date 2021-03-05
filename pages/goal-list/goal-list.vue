@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<uni-header rightIcon='plusempty' @onIconClick="onIconClick">趣打卡</uni-header>
+		<uni-header rightIcon='plusempty' @onIconClick="onIconClick" title="趣打卡"></uni-header>
 		<view v-if="user" class="statBar">
 			<!-- <text class="statInfo" style="background-color: red;">
 				{{c_goals.length}}项目标，已完成{{c_goals.filter(_ => _.times === _.diff).length}}项
@@ -18,7 +18,7 @@
 		</view>
 		<scroll-view v-if="user" scroll-y="true" :style="{height:scrollHeight+'px'}">
 			<uni-swipe-action v-for="goal in goals">
-				<uni-swipe-action-item :style="{'opacity': goal.finish ? 0.8 : 1}">
+				<uni-swipe-action-item :style="{'opacity': goal.finish ? 0.6 : 1}">
 					<template v-slot:right>
 						<view class="swipeActionItem__rightOption">
 							<!-- <view class="swipeActionItem__rightOption-btn">
@@ -30,15 +30,25 @@
 						</view>
 					</template>
 					<view class="goal" @click="addRecord(goal)">
+						<!-- 
+						:style="{
+							'border-left': goal.finish ? '#eee' : `4px solid ${priority_colors[goal.priority]}`,
+						}" -->
 						<view
-							class="goal__board"
+							:class="['goal__board']"
 							:style="{
-								'border-left': goal.finish ? '#eee' : `4px solid ${priority_colors[goal.priority]}`,
-							}">
+								'background-image': goal.finish ? '#eee' : `linear-gradient(135deg, ${priority_colors[goal.priority]} 8px, #fff 8px)`
+							}"
+							>
 							<view :class="['goal__goalName', {'goal__disabled':goal.diff === goal.times}]">
 								<view>
+									<uni-icons
+										v-if="goal.finish"
+										class="check-square"
+										color="#fff"
+										type="checkmarkempty" />
 									<text
-										v-if="!goal.finish"
+										v-else
 										:style="{'background-color': priority_colors[goal.priority]}"
 										class="priorityLabel">
 										{{priority_labels[goal.priority]}}
@@ -60,8 +70,8 @@
 								<view style="font-size: 12px; margin-top: 4px;">已坚持</view>
 							</view>
 						</view>
-						<view class="goal__progressBar" v-if="goal.diff > goal.times">
-							<view class="goal__progressBar__progress" :style="{width: (goal.times / goal.diff)*100+'%'}"></view>
+						<view class="goal__progressBar">
+							<view class="goal__progressBar__progress" :style="{width: (goal.times / goal.repeat_times)*100+'%'}"></view>
 						</view>
 					</view>
 				</uni-swipe-action-item>
@@ -76,9 +86,13 @@
 
 <script>
 	import dayjs from 'dayjs'
-	import querystring from 'querystring'
+	import customParseFormat from 'dayjs/plugin/customParseFormat'
+	import isBetween from 'dayjs/plugin/isBetween'
+	import qs from 'qs'
 	import { priority_colors, priority_labels } from '../../biz/priority.js'
 	console.log('priority_colors', priority_colors)
+	dayjs.extend(customParseFormat)
+	dayjs.extend(isBetween)
 	export default {
 		onReady() {
 			const that = this
@@ -164,8 +178,8 @@
 				// this.getRecords()
 				this.getGoals()
 			},
-			getRecords() {
-				uniCloud.callFunction({
+			async getRecords() {
+				await uniCloud.callFunction({
 					name: 'get_records',
 					data: {
 						date: this.date,
@@ -177,13 +191,13 @@
 					console.log('finished_goal_ids', this.finished_goal_ids)
 				})
 			},
-			getGoals() {
+			async getGoals() {
 				console.log('local user', this.$store.state.user)
 				if(this.$store.state.user) {
 					// if(loading) {
 						uni.showLoading()
 					// }
-					this.getRecords()
+					await this.getRecords()
 					uniCloud.callFunction({
 						name: 'get_goal',
 						data: {
@@ -203,9 +217,33 @@
 				}
 			},
 			addRecord(goal) {
+				const start_time = dayjs(goal.start_time, 'HH:mm')
+				const end_time = dayjs(goal.end_time, 'HH:mm')
+				const now = dayjs()
+				// console.log('isBetween', now.isBetween(start_time, end_time))
+				console.log('isAfter', now.isAfter(end_time))
+				if(now.isAfter(end_time)) {
+					// uni.showModal({
+					// 	title: '该目标未在规定时间完成，调整到以后的时间？'
+					// })
+					uni.showToast({
+						position: 'bottom',
+						title: '任务过期',
+						icon: 'none'
+					})
+					return
+				}
+				if(now.isBefore(start_time)) {
+					uni.showToast({
+						position: 'bottom',
+						title: '未到打卡时间',
+						icon: 'none'
+					})
+					return
+				}
 				// const left_days = dayjs(goal.end_time).diff(goal.start_time, 'd') - goal.times
 				const left_days = goal.diff - goal.times
-				const p = querystring.stringify({
+				const p = qs.stringify({
 					id: goal._id,
 					goal_name: goal.goal_name,
 					goal_times: goal.times,
@@ -230,11 +268,19 @@
 				})
 			},
 			toReportChart() {
+				console.log('toReportChart goals', this.goals)
 				// console.log('toReportChart', this.c_goals)
-				// const p = querystring.stringify(this.c_goals)
+				const p = qs.stringify({
+					// ids: this.goals.map(_ => _._id).join(',')
+					user_id: this.$store.state.user.id
+				})
 				// console.log('pp', p)
+				// const p = qs.stringify({
+				// 	total: this.goals.length,
+				// 	finish: this.goals.filter(_ => _.finish).length
+				// })
 				uni.navigateTo({
-					url: '../report-chart/report-chart?goals=' + JSON.stringify(this.c_goals)
+					url: '../report-chart/report-chart?' + p
 				})
 			},
 			removeGoal(id, goal_name) {
@@ -280,6 +326,13 @@
 </script>
 
 <style lang="scss">
+	.check-square {
+		// border: 1px solid #ccc;
+		background-color: #ccc;
+		border-radius: 4px;
+		padding: 2px;
+		margin-right: 6px;
+	}
 	.priorityLabel {
 		border-radius: 4px;
 		margin-right: 6px;
@@ -321,7 +374,9 @@
 	}
 	.goal__progressBar__progress {
 		/* background-color: blue; */
-		background-color: #3F536E;
+		background-color: $uni-color-primary;
+		border-radius: 2px;
+		box-shadow: 0px 1px 5px 0px rgba($uni-color-primary, 0.5);
 	}
 	.goal__board {
 		box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);
@@ -332,7 +387,7 @@
 	.goal__progressBar {
 		display: flex;
 		margin-top: -1px;
-		height: 1px;
+		height: 2px;
 	}
 	.goal__goalName {
 		// line-height: 51px;
@@ -347,7 +402,7 @@
 		color: black;
 		font-size: 1.2em;
 		font-weight: bold;
-		background-color: #3F536E;
+		background-color: $uni-color-primary;
 		color: #FFFFFF;
 		padding: 4px 12px;
 		border-radius: $uni-border-radius-base;

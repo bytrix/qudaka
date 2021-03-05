@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<uni-header>好友</uni-header>
+		<uni-header title="好友"></uni-header>
 		<view style="color: #ccc; text-align: center; padding: 24rpx;" v-if="friends.length === 0">
 			暂无任何好友
 		</view>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-	import querystring from 'querystring'
+	import qs from 'qs'
 	export default {
 		data() {
 			return {
@@ -32,7 +32,7 @@
 		methods: {
 			toUser(user) {
 				console.log('to user', user)
-				const u = querystring.stringify(user)
+				const u = qs.stringify(user)
 				uni.navigateTo({
 					url: '../user/user?' + u
 				})

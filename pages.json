@@ -16,6 +16,10 @@
 							"height":"300px",
 							"mask": "rgba(0,0,0,0.4)"
 						}
+					}, {
+						"id": "image_viewer",
+						"path": "./components/record-card/image-viewer",
+						"type": "popup"
 					}]
 				}
 			}
@@ -142,7 +146,14 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
+                "enablePullDownRefresh": false,
+				"app-plus": {
+						"subNVues": [{
+							"id": "image_viewer",
+							"path": "./components/record-card/image-viewer",
+							"type": "popup"
+						}]
+				}
             }
             
         }
@@ -164,7 +175,12 @@
 		"backgroundColor": "#F8F8F8",
 		"app-plus":{
 			"navigationStyle":"custom",
-			"titleNView":false
+			"titleNView":false,
+			"style": {
+				"fontSize": "30px",
+				"color": "red"
+			},
+			"nvueCompiler": "weex"
 		},
 		"disableScroll": true
 	},

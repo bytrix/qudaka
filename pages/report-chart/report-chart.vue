@@ -1,30 +1,31 @@
 <template>
 	<view>
-		<uni-header showBackIcon>统计</uni-header>
+		<uni-header showBackIcon title="统计"></uni-header>
+		<!-- {{JSON.stringify(ids)}} -->
 		<view class=" ganttLine" v-for="goal in goals">
 			<view class="ganttLine__taskName">
 				{{goal.goal_name}}
 			</view>
 			<view class="ganttLine__taskStatus">
 				<text v-if="goal.times === 0">未开始</text>
-				<text v-else-if="goal.times !== 0 && goal.times < goal.total_days && goal.passed_days < goal.total_days" style="color: #007AFF;">进行中</text>
-				<text v-else-if="goal.passed_days > goal.total_days" style="color: #FF5A5F;">已逾期</text>
+				<text v-else-if="goal.times !== 0 && goal.times < goal.total_seconds && goal.passed_seconds < goal.total_seconds" style="color: #007AFF;">进行中</text>
+				<text v-else-if="goal.passed_seconds > goal.total_seconds" style="color: #FF5A5F;">已逾期</text>
 				<text v-else>未知</text>
 			</view>
 			<view style="flex: 1; padding: 5px;">
-				<view class="ganttLine__taskTimeline--total" :style="{width: 350 * (goal.total_days / max_days) + 8 + 'rpx'}">
+				<view class="ganttLine__taskTimeline--total" :style="{width: 350 * (goal.total_seconds / max_duration) + 8 + 'rpx'}">
 					<view
 						class="ganttLine__taskTimeline--passDays"
 						:style="{
-							width: 350 * (goal.passed_days < max_days ? goal.passed_days / max_days : goal.total_days / max_days) + 'rpx',
+							width: 350 * (goal.passed_seconds < max_duration ? goal.passed_seconds / max_duration : goal.total_seconds / max_duration) + 'rpx',
 						}" >
 						<view
 							class="ganttLine__taskTimeline--current"
-							:style="{width: 350 * (goal.times < max_days ? goal.times / max_days : 1) + 'rpx'}"></view>
+							:style="{width: 350 * (goal.times < max_duration ? goal.times / max_duration : 1) + 'rpx'}"></view>
 					</view>
 				</view>
 				<view class="ganttLine__taskTimeline--percent">
-					{{Math.round(goal.times / goal.total_days * 100) + '%'}}
+					{{Math.round(goal.times / goal.total_seconds * 100) + '%'}}
 				</view>
 			</view>
 		</view>
@@ -38,31 +39,59 @@
 		data() {
 			return {
 				goals: [],
-				max_days: 0, // 所有目标的最长周期，用于整体样式排版
+				max_duration: 25, // 所有目标的最长周期（单位：秒），用于整体样式排版
 			}
 		},
-		onLoad({goals}) {
-			const _goals = JSON.parse(goals)
+		// onLoad({ ids }) {
+		// 	// console.log('on load', e)
+		// 	this.ids = ids.split(',')
+		// },
+		onLoad({user_id}) {
+			// const _goals = JSON.parse(goals)
 			const that = this
-			this.goals = _goals.map(_ => {
-				const total_days =  dayjs(_.end_time).diff(_.start_time, 'd') + 1
-				const passed_days = dayjs().diff(_.start_time, 'd') + 1
-				that.max_days = Math.max(that.max_days, total_days)
-				return {
-					..._,
-					total_days,
-					passed_days
+			// this.goals = _goals.map(_ => {
+			// 	const total_seconds =  dayjs(_.end_time).diff(_.start_time, 'd') + 1
+			// 	const passed_seconds = dayjs().diff(_.start_time, 'd') + 1
+			// 	that.max_duration = Math.max(that.max_duration, total_seconds)
+			// 	return {
+			// 		..._,
+			// 		total_seconds,
+			// 		passed_seconds
+			// 	}
+			// })
+			// console.log('this.goals', this.goals)
+			console.log('user_id', user_id)
+			uniCloud.callFunction({
+				name: 'get_goal',
+				data: {
+					user_id
+				},
+				success({ result }) {
+					console.log('get goals', result.data)
+					that.goals = result.data.map(_ => {
+						const start_time = dayjs(`0000-00-00 ${_.start_time}`)
+						const end_time = dayjs(`0000-00-00 ${_.end_time}`)
+						const now = dayjs()
+						const total_seconds = end_time.diff(start_time, 's')
+						const passed_seconds = now.diff(start_time, 's')
+						that.max_duration = Math.max(that.max_duration, total_seconds)
+						return {
+							..._,
+							total_seconds,
+							passed_seconds: passed_seconds > total_seconds ? passed_seconds : total_seconds
+						}
+					})
 				}
 			})
-			console.log('this.goals', this.goals)
 			// this.goals = [
 			// 	{
 			// 		goal_name: 'aa',
-			// 		total_days: 10,
-			// 		passed_days: 2
+			// 		total_seconds: 10,
+			// 		passed_seconds: 2,
+			// 		times: 2
 			// 	}
 			// ]
-			console.log('goals', this.goals)
+			// console.log('goals', this.goals)
 		},
 		methods: {
 			

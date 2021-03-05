@@ -3,9 +3,10 @@ const db = uniCloud.database()
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
 	event = {
+		...event,
 		timestamp: new Date().getTime(),
 		times: parseInt(event.times),
-		...event
+		repeat_times: parseInt(event.repeat_times)
 	}
 	console.log('event : ', event)
 	const collection = await db.collection('goal')

@@ -4,9 +4,10 @@
 			<view class="header__title_leftIcon">
 				<uni-icons v-if="showBackIcon" type="back" size="19" @click="back"></uni-icons>
 			</view>
-			<text class="header__title">
+			<!-- <view class="header__title">
 				<slot></slot>
-			</text>
+			</view> -->
+			<text class="header__title">{{title}}</text>
 			<uni-icons class="header__title__rightIcon" :type="rightIcon" size="19" @click="handleRightClick"></uni-icons>
 			<slot name='right'></slot>
 		</view>
@@ -16,7 +17,7 @@
 
 <script>
 	export default {
-		props: ['showBackIcon', 'leftIcon', 'rightIcon'],
+		props: ['title', 'showBackIcon', 'leftIcon', 'rightIcon'],
 		data() {
 			return {
 				
@@ -35,11 +36,13 @@
 
 <style lang="scss">
 	.header {
-		position: fixed;
+		// position: fixed;
 		top: 0px;
-		width: 100%;
+		// width: 100%;
+		flex: 1;
+        flex-direction: row;
 		box-sizing: border-box;
-		left: 0px;
+		// left: 0px;
 		background-color: white;
 		// background-color: red;
 		min-height: $uni-header-height;
@@ -51,12 +54,17 @@
 		z-index: 1;
 		// opacity: 0.4;
 	}
-	.header__after {
-		min-height: $uni-header-height + 7px;
-		// background-color: blue;
-	}
+	// .header__after {
+	// 	min-height: $uni-header-height + 7px;
+	// 	// background-color: blue;
+	// }
 	.header__title {
+		text-align: center;
+		align-items: center;
 		flex: 1;
+		// background-color: green;
+		font-weight: bold;
+		font-size: 16px;
 	}
 	.header__title_leftIcon {
 		width: 19px;

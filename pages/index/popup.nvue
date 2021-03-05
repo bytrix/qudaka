@@ -11,7 +11,7 @@
 			</picker>
 		</view>
 		<view class="timerange-tab-group">
-			<text :class="['timerange-tab', sortBy === 'day' && 'active']" @click="handleSortBy('day')">最近5天</text>
+			<text :class="['timerange-tab', sortBy === 'day' && 'active']" @click="handleSortBy('day')">最近3天</text>
 			<text :class="['timerange-tab', sortBy === 'week' && 'active']" @click="handleSortBy('week')">本周</text>
 			<text :class="['timerange-tab', sortBy === 'month' && 'active']" @click="handleSortBy('month')">本月</text>
 			<text :class="['timerange-tab', sortBy === 'all' && 'active']" @click="handleSortBy('all')">全部</text>
@@ -67,7 +67,7 @@
 						this.endTime = null
 						break
 					case 'day':
-						this.startTime = dayjs().subtract(4, 'days').format('YYYY-MM-DD')
+						this.startTime = dayjs().subtract(2, 'days').format('YYYY-MM-DD')
 						this.endTime = dayjs().add(1, 'days').format('YYYY-MM-DD')
 						break
 					case 'week':

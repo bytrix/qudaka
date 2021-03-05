@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<uni-header>我的</uni-header>
+		<uni-header title="我的"></uni-header>
 		<!-- <image src="../../static/bg.jpeg"></image> -->
 		<view v-if="user!==null">
 			<uni-list>
@@ -53,7 +53,7 @@
 	import model from '../../sqlite_db/model/index.js'
 	import db from '../../sqlite_db/db.js'
 	import { objectPropFill } from '../../utils/utils.js'
-	import querystring from 'querystring'
+	import qs from 'qs'
 	export default {
 		data() {
 			return {
@@ -127,7 +127,7 @@
 				})
 			},
 			changeUsername() {
-				const p = querystring.stringify({
+				const p = qs.stringify({
 					username: this.user.username,
 					user_id: this.user.id
 				})
@@ -177,7 +177,7 @@
 				})
 			},
 			changeSignature() {
-				const p = querystring.stringify({
+				const p = qs.stringify({
 					user_id: this.user.id,
 					signature: this.user.signature
 				})

@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<uni-header showBackIcon leftIcon='plus'>{{goal.name}}</uni-header>
+		<uni-header showBackIcon leftIcon='plus' :title="goal.name"></uni-header>
 		<view class="encourageWords">
 			<text v-if="goal.times === 0">坚持就是胜利！</text>
 			<!-- <text v-else-if="goal.times !== 0 && now === goal.update_time">今天已经打过卡了</text> -->
@@ -11,7 +11,7 @@
 				:imageList="imageList"
 				@onImageUpload="onImageUpload"
 			/>
-			<textarea name='text' class="textarea" placeholder="写下你的打卡宣言"></textarea>
+			<textarea name='text' class="textarea" placeholder="记录你的打卡宣言"></textarea>
 			<!-- <button :disabled="now === goal.update_time" type="primary" class="submitBtn" form-type="submit">打卡</button> -->
 			<button type="primary" class="submitBtn" form-type="submit">打卡</button>
 		</form>
@@ -53,6 +53,15 @@
 		},
 		methods: {
 			addRecord(formData) {
+				const text = formData.detail.value.text
+				if(text === '') {
+					uni.showToast({
+						position: 'bottom',
+						icon: 'none',
+						title: '请填写打卡内容'
+					})
+					return
+				}
 				model.user.get()
 				.then(u => {
 					console.log('local user', u)
@@ -73,7 +82,7 @@
 							},
 							// goal_id: this.goal.id,
 							user_id: u.id,
-							text: formData.detail.value.text,
+							text,
 							create_time: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 							date: dayjs().format('YYYY-MM-DD')
 						}

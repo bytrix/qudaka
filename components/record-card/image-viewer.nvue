@@ -1,0 +1,45 @@
+<template>
+	<div class="viewer" @click="hideViewer">
+		<image mode="aspectFit" class="image" :src="image"></image>
+	</div>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				image: null
+			}
+		},
+		mounted() {
+			console.log('mounted.....', imageViewer, this.image)
+			const imageViewer = uni.getSubNVueById('image_viewer')
+			// if(!this.image) {
+			// 	imageViewer.hide()
+			// }
+			uni.$on('image-viewer', image => {
+				console.log('on', image)
+				this.image = image
+			})
+		},
+		methods: {
+			hideViewer() {
+				console.log('hideViewer')
+				const imageViewer = uni.getSubNVueById('image_viewer')
+				imageViewer.hide('zoom-fade-in', 200)
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.viewer {
+		background-color: #000000;
+		// background-color: red;
+		display: flex;
+		color: #FFFFFF;
+	}
+	.image {
+		flex: 1;
+	}
+</style>

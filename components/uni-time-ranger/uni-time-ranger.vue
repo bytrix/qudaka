@@ -11,6 +11,7 @@
 </template>
 
 <script>
+	import dayjs from 'dayjs'
 	export default {
 		props: ['mode', 'text', 'style'],
 		data() {
@@ -24,8 +25,20 @@
 				this.$emit('onChange', this.value)
 			},
 			handleChange1({ detail }) {
-				this.$set(this.value, 1, detail.value)
-				this.$emit('onChange', this.value)
+				// console.log('handleChange1', detail.value, this.value[0])
+				const startTime = dayjs(`0000-00-00 ${this.value[0]}`)
+				const endTime = dayjs(`0000-00-00 ${detail.value}`)
+				console.log('isBefore', endTime.isAfter(startTime))
+				if(endTime.isAfter(startTime)) {
+					this.$set(this.value, 1, detail.value)
+					this.$emit('onChange', this.value)
+				} else {
+					uni.showToast({
+						position: 'bottom',
+						icon: 'none',
+						title: '结束时间不能在开始时间前面'
+					})
+				}
 			},
 		}
 	}

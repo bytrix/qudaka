@@ -37,3 +37,12 @@ export function objectPropFill(obj, value) {
 	}
 	return obj
 }
+
+export function range(n) {
+	let arr = new Array(n).fill(0)
+	console.log('arr', arr)
+	for(let i = 0 ; i < arr.length; i++) {
+		arr[i] = i
+	}
+	return arr
+}

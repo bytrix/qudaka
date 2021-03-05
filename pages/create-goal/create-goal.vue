@@ -42,14 +42,21 @@
 					style="margin: 12px;"
 					text="重复"
 				/>
-				<!-- <view style="background-color: red; flex: 1;"> -->
-					<input
+				<view style="flex: 1; flex-direction: row;" v-if="repeat">
+					<view style="width: 100px; display: inline-block;">
+						<picker-view class="picker-view">
+							<picker-view-column>
+								<view v-for="i in range7">{{i}}</view>
+							</picker-view-column>
+						</picker-view>
+					</view>
+					<!-- <input
 						name="repeat_times"
 						v-if="repeat"
 						class="number"
-						placeholder="1" />
-					<label v-if="repeat" class="unit">次/星期</label>
-				<!-- </view> -->
+						placeholder="1" /> -->
+					<label v-if="repeat" class="unit" style="flex: 1;">次/星期</label>
+				</view>
 			</view>
 			
 			<button :disabled="isDisabled" form-type="submit" type="primary" class="createGroup__createBtn">创建目标</button>
@@ -60,6 +67,7 @@
 <script>
 	import dayjs from 'dayjs'
 	import UniCheckbox from '../../components/uni-checkbox/uni-checkbox.vue'
+	import { range } from '../../utils/utils.js'
 	export default {
 		components: {
 			UniCheckbox
@@ -67,6 +75,9 @@
 		computed: {
 			isDisabled() {
 				return this.goal_name === '' || this.end_time === ''
+			},
+			range7() {
+				return range(7).map(i => i + 1)
 			}
 		},
 		data() {
@@ -84,8 +95,7 @@
 					normal: '正常',
 					success: '待定'
 				},
-				// checked: true,
-				repeat: true,
+				repeat: false,
 				repeat_times: 0
 			}
 		},
@@ -180,6 +190,12 @@
 		margin-top: 24px;
 		font-weight: bold;
 	}
+	.picker-view {
+		height: 48px;
+		width: 100px;
+		text-align: center;
+		line-height: 32px;
+	}
 	.form-item {
 		padding-top: 15px;
 		padding-bottom: 15px;
@@ -211,6 +227,7 @@
 		// background-color: blue;
 		height: 1em;
 		padding: 6px;
-		margin: 6px 6px 0px 0px;
+		// margin: 6px 6px 0px 0px;
+		vertical-align: 1.1em;
 	}
 </style>
