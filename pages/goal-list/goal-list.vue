@@ -17,7 +17,7 @@
 			</view>
 		</view>
 		<scroll-view v-if="user" scroll-y="true" :style="{height:scrollHeight+'px'}">
-			<uni-swipe-action v-for="goal in goals">
+			<uni-swipe-action v-for="goal in goals" v-if="goal.show">
 				<uni-swipe-action-item :style="{'opacity': goal.finish ? 0.6 : 1}">
 					<template v-slot:right>
 						<view class="swipeActionItem__rightOption">
@@ -192,6 +192,8 @@
 				})
 			},
 			async getGoals() {
+				console.log('getGoals', this.date)
+				const date = this.date
 				console.log('local user', this.$store.state.user)
 				if(this.$store.state.user) {
 					// if(loading) {
@@ -205,10 +207,21 @@
 						}
 					}).then(({ result }) => {
 						console.log('result.data', result.data)
+						const now = dayjs().format('0000-00-00 HH:mm')
 						this.goals = result.data.map(_ => ({
 							..._,
-							diff: dayjs(_.end_time).diff(_.start_time, 'd') + 1,
+							diff: dayjs(`0000-00-00 ${_.end_time}`).diff(`0000-00-00 ${_.start_time}`, 'd') + 1,
+							left_minutes: dayjs(`0000-00-00 ${_.end_time}`).diff(now, 'm') + 1,
 							finish: this.finished_goal_ids.indexOf(_._id) !== -1,
+							// create_time: dayjs(_.timestamp).format('YYYY-MM-DD'),
+							// show: _.repeat || dayjs(_.timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD'),
+							show: _.repeat || dayjs(_.timestamp).format('YYYY-MM-DD') === date,
+							// show: () => {
+							// 	if(dayjs(_.timestamp).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
+							// 		return true
+							// 	}
+							// 	return _.repeat
+							// }
 						}))
 						uni.hideLoading()
 					})
@@ -248,19 +261,21 @@
 					goal_name: goal.goal_name,
 					goal_times: goal.times,
 					update_time: goal.update_time,
-					left_days
+					left_days,
+					left_minutes: goal.left_minutes
 				})
-				// if(left_days > 0) {
+				console.log('剩余时间', goal.left_minutes)
+				if(goal.left_minutes > 0) {
 					uni.navigateTo({
 						url: '../add-record/add-record?' + p
 					})
-				// } else {
-				// 	uni.showToast({
-				// 		icon: 'none',
-				// 		position: 'bottom',
-				// 		title: '任务结束'
-				// 	})
-				// }
+				} else {
+					uni.showToast({
+						icon: 'none',
+						position: 'bottom',
+						title: '任务结束'
+					})
+				}
 			},
 			onIconClick() {
 				uni.navigateTo({
@@ -270,15 +285,15 @@
 			toReportChart() {
 				console.log('toReportChart goals', this.goals)
 				// console.log('toReportChart', this.c_goals)
-				const p = qs.stringify({
-					// ids: this.goals.map(_ => _._id).join(',')
-					user_id: this.$store.state.user.id
-				})
-				// console.log('pp', p)
 				// const p = qs.stringify({
-				// 	total: this.goals.length,
-				// 	finish: this.goals.filter(_ => _.finish).length
+				// 	// ids: this.goals.map(_ => _._id).join(',')
+				// 	user_id: this.$store.state.user.id
 				// })
+				// console.log('pp', p)
+				const p = qs.stringify({
+					total: this.goals.length,
+					finish: this.goals.filter(_ => _.finish).length
+				})
 				uni.navigateTo({
 					url: '../report-chart/report-chart?' + p
 				})

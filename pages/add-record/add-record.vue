@@ -42,6 +42,7 @@
 			}
 		},
 		onLoad(p) {
+			console.log('add-record on load', p)
 			this.goal = {
 				id: p.id,
 				name: p.goal_name,

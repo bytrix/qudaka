@@ -13,7 +13,7 @@
 				:style="{'transform': `rotate(${angle[1]}deg)`}">
 			</view>
 		</view>
-		<view style="width: 150px; margin: 0 auto;">
+		<view style="width: 160px; margin: 0 auto;">
 			<view class="legend">
 				<view class="legend_before" :style="{'background-color': colors[0]}"></view>
 				未完成事项

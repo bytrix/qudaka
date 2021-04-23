@@ -10,7 +10,15 @@
 			<view class="line-h"></view>
 			<swiper :current="tabIndex" class="swiper-box" style="flex: 1;" :duration="300" @change="ontabchange">
 				<swiper-item class="swiper-item" :key="index1">
+					
 					<list style="width: 100%;">
+						<refresh :enableBackToTop="true" class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="refreshing ? 'show' : 'hide'">
+							<div class="refresh-view">
+								<image class="refresh-icon" :src="refreshIcon" :style="{width: (refreshing || pulling) ? 0: '30px'}" :class="{'refresh-icon-active': refreshFlag}"></image>
+								<loading-indicator class="loading-icon" animating="true" v-if="refreshing"></loading-indicator>
+								<text class="loading-text">{{refreshText}}</text>
+							</div>
+						</refresh>
 						<cell v-for="record in records">
 							<record-card :record="record" @longpress="handleLongpress(record)"></record-card>
 						</cell>
@@ -18,6 +26,13 @@
 				</swiper-item>
 				<swiper-item class="swiper-item" :key="index2">
 					<list style="width: 100%;">
+						<refresh :enableBackToTop="true" class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="refreshing ? 'show' : 'hide'">
+							<div class="refresh-view">
+								<image class="refresh-icon" :src="refreshIcon" :style="{width: (refreshing || pulling) ? 0: '30px'}" :class="{'refresh-icon-active': refreshFlag}"></image>
+								<loading-indicator class="loading-icon" animating="true" v-if="refreshing"></loading-indicator>
+								<text class="loading-text">{{refreshText}}</text>
+							</div>
+						</refresh>
 						<cell v-for="friend in friends">
 							<record-card :record="friend"></record-card>
 						</cell>
@@ -103,6 +118,9 @@
         },
         data() {
             return {
+				refreshing: true,
+				pulling: true,
+				refreshFlag: true,
 				records: [],
 				friends: [],
                 newsList: [],
@@ -122,6 +140,11 @@
                 refreshIcon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAB5QTFRFcHBw3Nzct7e39vb2ycnJioqK7e3tpqam29vb////D8oK7wAAAAp0Uk5T////////////ALLMLM8AAABxSURBVHja7JVBDoAgDASrjqj//7CJBi90iyYeOHTPMwmFZrHjYyyFYYUy1bwUZqtJIYVxhf1a6u0R7iUvWsCcrEtwJHp8MwMdvh2amHduiZD3rpWId9+BgPd7Cc2LIkPyqvlQvKxKBJ//Qwq/CacAAwDUv0a0YuKhzgAAAABJRU5ErkJggg=="
             }
         },
+		onShow() {
+			console.log('on show....')
+			// this.getData()
+			this.getFriends()
+		},
         onLoad() {
             setTimeout(()=>{
               this.tabBars.forEach((tabBar) => {
@@ -140,6 +163,14 @@
 			
         },
         methods: {
+			handleScrollToUpper() {
+				console.log('handleScrollToUpper')
+			},
+			toSearch() {
+				const subNVue = uni.getSubNVueById('search_popup')
+				console.log("subNVue", subNVue)
+				subNVue.show('slide-in-top', 200)
+			},
 			handleLongpress(record) {
 				console.log('长按')
 				const that = this
@@ -191,7 +222,7 @@
 							thumb_up_by_me: that.$store.state.user ? _.thumb_up_users.indexOf(that.$store.state.user.id) !== -1 : false,
 							fromNow: dayjs(_.create_time).fromNow()
 						}))
-						console.log('that.records', that.records)
+						console.log('getData > that.records', that.records)
 						uni.hideLoading()
 					})
 					.catch(e => {
@@ -202,7 +233,8 @@
 			getFriends() {
 				// console.log('get friends', this.$store.state.user)
 				const that = this
-				console.log('getFriends')
+				that.friends = []
+				console.log('getFriends', that.friends)
 				const db = uniCloud.database()
 				
 				model.get().then(user => {
@@ -216,8 +248,12 @@
 							// .orderBy('create_time', 'desc')
 							.get()
 							.then(({ result }) => {
-								console.log('result --->', result.data)
-								that.friends = that.friends.concat(result.data)
+								console.log('getFriends result --->', result.data)
+								// that.friends = that.friends.concat(result.data)
+								that.friends = that.friends.concat(result.data.map(_ => ({
+									..._,
+									fromNow: dayjs(_.create_time).fromNow()
+								})))
 								console.log('that.friend --->', that.friends)
 							})
 							.catch(e => {
@@ -325,37 +361,44 @@
                 this.newsList[e].data.length = 0;
                 this.newsList[e].loadingText = "加载更多...";
             },
-            refreshData() {},
+            refreshData() {
+				console.log('refreshData')
+				this.getData()
+				this.getFriends()
+			},
             onrefresh(e) {
-                var tab = this.newsList[this.tabIndex];
-                if (!tab.refreshFlag) {
+				// console.log('onrefresh')
+    //             var tab = this.newsList[this.tabIndex];
+                if (!this.refreshFlag) {
                     return;
                 }
-                tab.refreshing = true;
-                tab.refreshText = "正在刷新...";
+                this.refreshing = true;
+                this.refreshText = "正在刷新...";
 
                 setTimeout(() => {
                     this.refreshData();
                     this.pulling = true;
-                    tab.refreshing = false;
-					tab.refreshFlag = false;
-                    tab.refreshText = "已刷新";
+                    this.refreshing = false;
+					this.refreshFlag = false;
+                    this.refreshText = "已刷新";
                     setTimeout(() => { // TODO fix ios和Android 动画时间相反问题
                         this.pulling = false;
                     }, 500);
                 }, 2000);
             },
             onpullingdown(e) {
-                var tab = this.newsList[this.tabIndex];
-                if (tab.refreshing || this.pulling) {
+				console.log('onpullingdown')
+				// return true
+                // var tab = this.newsList[this.tabIndex];
+                if (this.refreshing || this.pulling) {
                     return;
                 }
                 if (Math.abs(e.pullingDistance) > Math.abs(e.viewHeight)) {
-                    tab.refreshFlag = true;
-                    tab.refreshText = "释放立即刷新";
+                    this.refreshFlag = true;
+                    this.refreshText = "释放立即刷新";
                 } else {
-                    tab.refreshFlag = false;
-                    tab.refreshText = "下拉可以刷新";
+                    this.refreshFlag = false;
+                    this.refreshText = "下拉可以刷新";
                 }
             },
             newGuid() {
@@ -471,16 +514,22 @@
 
     .refresh {
         width: 750rpx;
-		width:100%;
-        height: 64px;
+		// width:100%;
+        height: 96px;
         justify-content: center;
+		align-items: center;
+		text-align: center;
+		// background-color: red;
+		display: flex;
     }
 
     .refresh-view {
-        flex-direction: row;
-        flex-wrap: nowrap;
+        // flex-direction: row;
+        // flex-wrap: nowrap;
         align-items: center;
         justify-content: center;
+		width: 500px;
+		// background-color: blue;
     }
 
 	.refresh-icon {

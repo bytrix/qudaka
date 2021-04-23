@@ -1,0 +1,159 @@
+<template>
+	<view>
+		<uni-header title="好友"></uni-header>
+		<swiper style="flex: 1">
+			<swiper-item>
+				<list>
+					<refresh
+					 :enableBackToTop="true" class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="refreshing ? 'show' : 'hide'"
+					>
+						<view class="refresh-view">
+							<image class="refresh-icon" :src="refreshIcon" :style="{width: (refreshing || pulling) ? 0: '30px'}" :class="{'refresh-icon-active': refreshFlag}"></image>
+							<loading-indicator class="loading-icon" animating="true" v-if="refreshing"></loading-indicator>
+							<text class="loading-text">{{refreshText}}</text>
+						</view>
+					</refresh>
+					<!-- <cell>
+						<view style="background-color: #007AFF; padding: 10px;">xx</view>
+					</cell> -->
+					<view style="color: #ccc; text-align: center; padding: 24rpx;" v-if="friends.length === 0">
+						暂无任何好友
+					</view>
+					<uni-list-chat
+						v-for="friend in friends"
+						:avatar="friend.avatar"
+						:title="friend.username"
+						:avatarCircle="true"
+						link
+						@click="toUser(friend)"
+						></uni-list-chat>
+				</list>
+			</swiper-item>
+		</swiper>
+	</view>
+</template>
+
+<script>
+	import qs from 'qs'
+	export default {
+		data() {
+			return {
+				friends: [],
+				refreshing: false,
+				refreshFlag: false,
+				pulling: false,
+                refreshIcon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAB5QTFRFcHBw3Nzct7e39vb2ycnJioqK7e3tpqam29vb////D8oK7wAAAAp0Uk5T////////////ALLMLM8AAABxSURBVHja7JVBDoAgDASrjqj//7CJBi90iyYeOHTPMwmFZrHjYyyFYYUy1bwUZqtJIYVxhf1a6u0R7iUvWsCcrEtwJHp8MwMdvh2amHduiZD3rpWId9+BgPd7Cc2LIkPyqvlQvKxKBJ//Qwq/CacAAwDUv0a0YuKhzgAAAABJRU5ErkJggg=="
+			}
+		},
+		onShow() {
+			this.getFriendList()
+		},
+		onLoad() {
+			this.getFriendList()
+		},
+		methods: {
+			onrefresh(e) {
+				console.log('onrefresh1')
+				this.refreshing = true
+				// return true
+                this.refreshText = "正在刷新...";
+				setTimeout(() => {
+					this.getFriendList()
+				this.refreshing = false
+				}, 500)
+			},
+			onpullingdown(e) {
+				console.log('onpullingdown1')
+                if (Math.abs(e.pullingDistance) > Math.abs(e.viewHeight)) {
+					console.log('aa')
+                    this.refreshFlag = true;
+                    this.refreshText = "释放立即刷新";
+                } else {
+					console.log('bb')
+                    this.refreshFlag = false;
+                    this.refreshText = "下拉可以刷新";
+                }
+			},
+			toUser(user) {
+				console.log('to user', user)
+				const u = qs.stringify(user)
+				uni.navigateTo({
+					url: '../user/user?' + u
+				})
+			},
+			getFriendList() {
+				console.log('getFriendList', this.$store.state.user)
+				if(!this.$store.state.user) {
+					return
+				}
+				uni.showLoading()
+				const db = uniCloud.database()
+				db.collection('user,user').doc(this.$store.state.user.id)
+					.field('username,avatar,friend_id{username,avatar}')
+					.get()
+					.then(({ result }) => {
+						console.log('好友', result)
+						this.friends = result.data[0].friend_id
+						console.log('friends', this.friends)
+						uni.hideLoading()
+					})
+			}
+		}
+	}
+</script>
+
+<style>
+    .refresh {
+        width: 750rpx;
+		/* width:100%; */
+        height: 96px;
+        justify-content: center;
+		align-items: center;
+		text-align: center;
+		/* background-color: blue; */
+		display: flex;
+    }
+	
+	
+	.refresh-view {
+	    /* flex-direction: column; */
+	    /* flex-wrap: nowrap; */
+	    align-items: center;
+		/* width: 100%; */
+	    justify-content: center;
+		/* background-color: green; */
+		/* flex: 1; */
+		width: 600px;
+		/* margin: 100px auto; */
+		padding: 100px;
+	}
+	
+	.refresh-icon {
+		width: 30px;
+		height: 30px;
+		transition-duration: .5s;
+		transition-property: transform;
+		transform: rotate(0deg);
+		transform-origin: 15px 15px;
+	}
+	
+	.refresh-icon-active {
+		transform: rotate(180deg);
+	}
+	
+	.loading-text {
+	    margin-left: 2px;
+	    font-size: 16px;
+	    color: #999999;
+	}
+	
+	.loading-icon {
+		width: 20px;
+		height: 20px;
+		margin-right: 5px;
+		color: #999999;
+	}
+	
+	
+	
+</style>

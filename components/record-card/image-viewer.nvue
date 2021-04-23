@@ -36,7 +36,7 @@
 	.viewer {
 		background-color: #000000;
 		// background-color: red;
-		display: flex;
+		// display: flex;
 		color: #FFFFFF;
 	}
 	.image {

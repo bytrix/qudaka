@@ -1,10 +1,11 @@
 <template>
 	<view class="content">
-		<uni-header rightIcon='search' @onIconClick="toSearch">趣打卡</uni-header>
-		<flex-scroll-view>
+		<!-- <uni-header rightIcon='search' @onIconClick="toSearch">趣打卡</uni-header> -->
+		<text style="font-size: 40px;">index</text>
+		<!-- <flex-scroll-view>
 			<record-card v-for="record in records" :record="record"></record-card>
 			<view style="text-align: center; color: #cccccc; margin: 36rpx;">我是有底线的～</view>
-		</flex-scroll-view>
+		</flex-scroll-view> -->
 	</view>
 	
 </template>
@@ -102,10 +103,10 @@
 		margin-bottom: 50rpx;
 	}
 
-	.text-area {
+	/* .text-area {
 		display: flex;
 		justify-content: center;
-	}
+	} */
 
 	.title {
 		font-size: 36rpx;
