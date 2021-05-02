@@ -23,6 +23,14 @@
         },
         /* 应用发布信息 */
         "distribute" : {
+			"icons": {
+				"android": {
+					"hdpi": "72x72",
+					"xhdpi": "96x96",
+					"xxhdpi": "144x144",
+					"xxxhdpi": "192x192"
+				}
+			},
             /* android打包配置 */
             "android" : {
                 "permissions" : [

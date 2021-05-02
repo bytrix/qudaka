@@ -2,12 +2,12 @@
 	<view style="display: flex; flex: 1">
 		<uni-header rightIcon='search' @onIconClick="toSearch" title="趣打卡"></uni-header>
 		<view class="tabs">
-			<scroll-view id="tab-bar" class="scroll-h" :scroll-x="true" :show-scrollbar="false" :scroll-into-view="scrollInto">
+			<!-- <scroll-view id="tab-bar" class="scroll-h" :scroll-x="true" :show-scrollbar="false" :scroll-into-view="scrollInto">
 				<view v-for="(tab,index) in tabBars" :key="tab.id" class="uni-tab-item" :id="tab.id" :data-current="index" @click="ontabtap">
 					<text class="uni-tab-item-title" :class="tabIndex==index ? 'uni-tab-item-title-active' : ''">{{tab.name}}</text>
 				</view>
 			</scroll-view>
-			<view class="line-h"></view>
+			<view class="line-h"></view> -->
 			<swiper :current="tabIndex" class="swiper-box" style="flex: 1;" :duration="300" @change="ontabchange">
 				<swiper-item class="swiper-item" :key="index1">
 					
@@ -24,7 +24,7 @@
 						</cell>
 					</list>
 				</swiper-item>
-				<swiper-item class="swiper-item" :key="index2">
+				<!-- <swiper-item class="swiper-item" :key="index2">
 					<list style="width: 100%;">
 						<refresh :enableBackToTop="true" class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="refreshing ? 'show' : 'hide'">
 							<div class="refresh-view">
@@ -37,7 +37,7 @@
 							<record-card :record="friend"></record-card>
 						</cell>
 					</list>
-				</swiper-item>
+				</swiper-item> -->
 			</swiper>
 		</view>
 	</view>
@@ -126,13 +126,16 @@
                 newsList: [],
                 cacheTab: [],
                 tabIndex: 0,
-                tabBars: [{
-                    name: '社区',
-                    id: 'shequ'
-                }, {
-                    name: '关注',
-                    id: 'guanzhu'
-                }],
+                tabBars: [
+					{
+						name: '社区',
+						id: 'shequ'
+					},
+					// {
+					// 	name: '关注',
+					// 	id: 'guanzhu'
+					// }
+				],
                 scrollInto: "",
                 showTips: false,
                 navigateFlag: false,
